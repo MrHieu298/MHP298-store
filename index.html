@@ -7,131 +7,88 @@
     <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@800;900&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --mhp-blue: #2185d5;
-            --mhp-dark: #1a4f7a;
-            --bg-gradient: radial-gradient(circle at top right, #f0f4f8, #d9e2ec);
-            --glass: rgba(255, 255, 255, 0.85);
-        }
+    --mhp-blue: #2185d5;
+    --mhp-dark: #1a4f7a;
+    --bg-gradient: radial-gradient(circle at top right, #f0f4f8, #d9e2ec);
+    --glass: rgba(255, 255, 255, 0.85);
+}
 
-        body {
-            margin: 0; padding: 0;
-            font-family: 'Quicksand', sans-serif;
-            background: var(--bg-gradient);
-            height: 100vh;
-            display: flex; flex-direction: column;
-            overflow: hidden; position: relative;
-        }
+body {
+    margin: 0; padding: 0;
+    font-family: 'Quicksand', sans-serif;
+    background: var(--bg-gradient);
+    min-height: 100vh; /* Sửa height thành min-height để điện thoại có thể cuộn */
+    display: flex; flex-direction: column;
+    overflow-x: hidden;
+    overflow-y: auto; /* Cho phép cuộn dọc trên di động */
+    position: relative;
+}
 
-        .physics-bg {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: -1; overflow: hidden; opacity: 0.4;
-        }
+.physics-bg {
+    position: fixed; /* Giữ nền cố định khi cuộn trang */
+    top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: -1; opacity: 0.4;
+}
 
-        .particle {
-            position: absolute; font-size: 2.5rem;
-            animation: float-around 25s infinite linear;
-        }
+header {
+    padding: 20px 0;
+    display: flex; flex-direction: column; /* Xếp dọc trên điện thoại */
+    align-items: center; justify-content: center; gap: 15px;
+    z-index: 10;
+}
 
-        @keyframes float-around {
-            0% { transform: translate(0, 0) rotate(0deg); }
-            50% { transform: translate(100px, 50px) rotate(180deg); }
-            100% { transform: translate(0, 0) rotate(360deg); }
-        }
+.logo-img { height: 100px; width: auto; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.15)); }
 
-        header {
-            padding: 25px 0;
-            display: flex; align-items: center; justify-content: center; gap: 25px;
-            z-index: 10;
-        }
+.title-3d {
+    font-family: 'Exo 2', sans-serif; font-size: 2.2rem; margin: 0;
+    background: linear-gradient(135deg, var(--mhp-blue), var(--mhp-dark));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    filter: drop-shadow(2px 2px 0px white); text-align: center;
+}
 
-        .logo-img { height: 130px; width: auto; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.15)); }
+.wrapper {
+    display: flex; flex-direction: column; /* Mặc định xếp dọc cho điện thoại */
+    flex: 1; padding: 20px; gap: 20px;
+}
 
-        .title-3d {
-            font-family: 'Exo 2', sans-serif; font-size: 3.5rem; margin: 0;
-            background: linear-gradient(135deg, var(--mhp-blue), var(--mhp-dark));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            filter: drop-shadow(2px 2px 0px white);
-        }
+/* HIỂN THỊ TRÊN MÁY TÍNH & TABLET LỚN */
+@media (min-width: 992px) {
+    header { flex-direction: row; gap: 25px; }
+    .logo-img { height: 130px; }
+    .title-3d { font-size: 3.5rem; }
+    .wrapper { flex-direction: row; padding: 0 50px 80px 50px; max-height: 70vh; gap: 40px; }
+    .profile-card { flex: 5; flex-direction: row; text-align: left; }
+    .projects-container { flex: 5; }
+    .avatar-box { width: 250px; height: 250px; }
+}
 
-        .shimmer-effect { position: relative; overflow: hidden; }
-        .shimmer-effect::after {
-            content: ""; position: absolute; top: -50%; left: -150%; width: 50%; height: 200%;
-            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0) 100%);
-            transform: rotate(30deg); animation: shimmer 4s infinite;
-        }
+.profile-card, .projects-container {
+    background: var(--glass); border-radius: 40px;
+    backdrop-filter: blur(20px); border: 2px solid white;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
 
-        @keyframes shimmer { 0% { left: -150%; } 30%, 100% { left: 150%; } }
+.profile-card { padding: 30px; display: flex; flex-direction: column; align-items: center; gap: 25px; }
 
-        .wrapper {
-            display: flex; flex: 1;
-            padding: 0 50px 100px 50px;
-            gap: 40px; max-height: 65vh;
-        }
+.avatar-box {
+    flex-shrink: 0; width: 180px; height: 180px;
+    border-radius: 30px; border: 6px solid white;
+    overflow: hidden; background: #fff;
+    display: flex; justify-content: center; align-items: center;
+}
 
-        .profile-card, .projects-container {
-            background: var(--glass); border-radius: 45px;
-            backdrop-filter: blur(20px); border: 2px solid white;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.1);
-        }
+.avatar-box img { width: 100%; height: 100%; object-fit: contain; }
 
-        /* --- ĐIỀU CHỈNH BỐ CỤC PROFILE --- */
-        .profile-card {
-            flex: 5; /* Tăng độ rộng để chứa ảnh và text nằm ngang */
-            padding: 40px;
-            display: flex;
-            flex-direction: row; /* Chuyển sang nằm ngang */
-            align-items: center;
-            justify-content: center;
-            gap: 30px; /* Khoảng cách giữa ảnh và text */
-            text-align: left; /* Chữ căn trái cho đẹp */
-        }
+.projects-container { display: flex; flex-direction: column; overflow: hidden; }
+.projects-header { padding: 25px; text-align: center; background: rgba(255,255,255,0.3); }
+.header-3d-text { font-family: 'Exo 2', sans-serif; font-size: 1.8rem; color: var(--mhp-blue); text-transform: uppercase; }
 
-        .avatar-box {
-            flex-shrink: 0; /* Không cho ảnh bị bóp nhỏ */
-            width: 280px;  /* Tăng kích thước để cân đối với chiều dọc của text */
-            height: 280px;
-            border-radius: 40px; /* Chuyển sang bo góc thay vì hình tròn để ảnh to hơn */
-            border: 6px solid white;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-            overflow: hidden;
-            background: #fff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .avatar-box img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-
-        .info-box {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .projects-container { flex: 5; display: flex; flex-direction: column; overflow: hidden; }
-        .projects-header { padding: 35px 20px 20px 20px; text-align: center; background: rgba(255,255,255,0.3); }
-        .header-3d-text {
-            font-family: 'Exo 2', sans-serif; font-size: 2.2rem; margin: 0;
-            color: var(--mhp-blue); text-transform: uppercase; letter-spacing: 2px;
-            text-shadow: 1px 1px 0px #fff, 2px 2px 0px rgba(0,0,0,0.15), 3px 3px 5px rgba(0,0,0,0.1);
-        }
-
-        .project-list { flex: 1; overflow-y: auto; padding: 20px 45px; }
-        .btn-project {
-            display: flex; align-items: center; background: white; margin-bottom: 18px; padding: 22px 28px;
-            border-radius: 22px; text-decoration: none; color: var(--mhp-dark); font-weight: 700;
-            border-left: 8px solid var(--mhp-blue); transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-        }
-
-        .btn-project:hover { transform: scale(1.03) translateX(15px); background: var(--mhp-blue); color: white; }
-        .project-list::-webkit-scrollbar { width: 6px; }
-        .project-list::-webkit-scrollbar-thumb { background: var(--mhp-blue); border-radius: 10px; }
-    </style>
+.project-list { flex: 1; overflow-y: auto; padding: 15px 25px; }
+.btn-project {
+    display: flex; align-items: center; background: white; margin-bottom: 12px; padding: 18px;
+    border-radius: 18px; text-decoration: none; color: var(--mhp-dark); font-weight: 700;
+    border-left: 6px solid var(--mhp-blue); box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
 </head>
 <body>
     <div class="physics-bg">
@@ -183,4 +140,5 @@
         </div>
     </div>
 </body>
+
 </html>
