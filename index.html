@@ -7,88 +7,118 @@
     <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@800;900&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-    --mhp-blue: #2185d5;
-    --mhp-dark: #1a4f7a;
-    --bg-gradient: radial-gradient(circle at top right, #f0f4f8, #d9e2ec);
-    --glass: rgba(255, 255, 255, 0.85);
-}
+            --mhp-blue: #2185d5;
+            --mhp-dark: #1a4f7a;
+            --bg-gradient: radial-gradient(circle at top right, #f0f4f8, #d9e2ec);
+            --glass: rgba(255, 255, 255, 0.85);
+        }
 
-body {
-    margin: 0; padding: 0;
-    font-family: 'Quicksand', sans-serif;
-    background: var(--bg-gradient);
-    min-height: 100vh; /* Sửa height thành min-height để điện thoại có thể cuộn */
-    display: flex; flex-direction: column;
-    overflow-x: hidden;
-    overflow-y: auto; /* Cho phép cuộn dọc trên di động */
-    position: relative;
-}
+        body {
+            margin: 0; padding: 0;
+            font-family: 'Quicksand', sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh; /* Giúp điện thoại cuộn được */
+            display: flex; flex-direction: column;
+            overflow-x: hidden; 
+            overflow-y: auto; 
+            position: relative;
+        }
 
-.physics-bg {
-    position: fixed; /* Giữ nền cố định khi cuộn trang */
-    top: 0; left: 0; width: 100%; height: 100%;
-    pointer-events: none; z-index: -1; opacity: 0.4;
-}
+        .physics-bg {
+            position: fixed; /* Cố định nền khi cuộn */
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: -1; overflow: hidden; opacity: 0.4;
+        }
 
-header {
-    padding: 20px 0;
-    display: flex; flex-direction: column; /* Xếp dọc trên điện thoại */
-    align-items: center; justify-content: center; gap: 15px;
-    z-index: 10;
-}
+        .particle {
+            position: absolute; font-size: 2.5rem;
+            animation: float-around 25s infinite linear;
+        }
 
-.logo-img { height: 100px; width: auto; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.15)); }
+        @keyframes float-around {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(100px, 50px) rotate(180deg); }
+            100% { transform: translate(0, 0) rotate(360deg); }
+        }
 
-.title-3d {
-    font-family: 'Exo 2', sans-serif; font-size: 2.2rem; margin: 0;
-    background: linear-gradient(135deg, var(--mhp-blue), var(--mhp-dark));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    filter: drop-shadow(2px 2px 0px white); text-align: center;
-}
+        header {
+            padding: 25px 0;
+            display: flex; flex-direction: column; /* Dọc cho di động */
+            align-items: center; justify-content: center; gap: 25px;
+            z-index: 10;
+        }
 
-.wrapper {
-    display: flex; flex-direction: column; /* Mặc định xếp dọc cho điện thoại */
-    flex: 1; padding: 20px; gap: 20px;
-}
+        .logo-img { height: 110px; width: auto; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.15)); }
 
-/* HIỂN THỊ TRÊN MÁY TÍNH & TABLET LỚN */
-@media (min-width: 992px) {
-    header { flex-direction: row; gap: 25px; }
-    .logo-img { height: 130px; }
-    .title-3d { font-size: 3.5rem; }
-    .wrapper { flex-direction: row; padding: 0 50px 80px 50px; max-height: 70vh; gap: 40px; }
-    .profile-card { flex: 5; flex-direction: row; text-align: left; }
-    .projects-container { flex: 5; }
-    .avatar-box { width: 250px; height: 250px; }
-}
+        .title-3d {
+            font-family: 'Exo 2', sans-serif; font-size: 2.5rem; margin: 0;
+            background: linear-gradient(135deg, var(--mhp-blue), var(--mhp-dark));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            filter: drop-shadow(2px 2px 0px white); text-align: center;
+        }
 
-.profile-card, .projects-container {
-    background: var(--glass); border-radius: 40px;
-    backdrop-filter: blur(20px); border: 2px solid white;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-}
+        .shimmer-effect { position: relative; overflow: hidden; }
+        .shimmer-effect::after {
+            content: ""; position: absolute; top: -50%; left: -150%; width: 50%; height: 200%;
+            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0) 100%);
+            transform: rotate(30deg); animation: shimmer 4s infinite;
+        }
 
-.profile-card { padding: 30px; display: flex; flex-direction: column; align-items: center; gap: 25px; }
+        @keyframes shimmer { 0% { left: -150%; } 30%, 100% { left: 150%; } }
 
-.avatar-box {
-    flex-shrink: 0; width: 180px; height: 180px;
-    border-radius: 30px; border: 6px solid white;
-    overflow: hidden; background: #fff;
-    display: flex; justify-content: center; align-items: center;
-}
+        .wrapper {
+            display: flex; flex-direction: column; /* Xếp dọc cho di động */
+            flex: 1; padding: 20px; gap: 30px;
+        }
 
-.avatar-box img { width: 100%; height: 100%; object-fit: contain; }
+        .profile-card, .projects-container {
+            background: var(--glass); border-radius: 45px;
+            backdrop-filter: blur(20px); border: 2px solid white;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.1);
+        }
 
-.projects-container { display: flex; flex-direction: column; overflow: hidden; }
-.projects-header { padding: 25px; text-align: center; background: rgba(255,255,255,0.3); }
-.header-3d-text { font-family: 'Exo 2', sans-serif; font-size: 1.8rem; color: var(--mhp-blue); text-transform: uppercase; }
+        .profile-card {
+            padding: 40px; display: flex; flex-direction: column; /* Dọc cho di động */
+            align-items: center; justify-content: center; gap: 20px; text-align: center;
+        }
 
-.project-list { flex: 1; overflow-y: auto; padding: 15px 25px; }
-.btn-project {
-    display: flex; align-items: center; background: white; margin-bottom: 12px; padding: 18px;
-    border-radius: 18px; text-decoration: none; color: var(--mhp-dark); font-weight: 700;
-    border-left: 6px solid var(--mhp-blue); box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-}
+        .avatar-box {
+            flex-shrink: 0; width: 220px; height: 220px;
+            border-radius: 40px; border: 6px solid white;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            overflow: hidden; background: #fff;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        .avatar-box img { width: 100%; height: 100%; object-fit: contain; }
+
+        .projects-container { display: flex; flex-direction: column; overflow: hidden; }
+        .projects-header { padding: 30px 20px; text-align: center; background: rgba(255,255,255,0.3); }
+        .header-3d-text {
+            font-family: 'Exo 2', sans-serif; font-size: 2rem; margin: 0;
+            color: var(--mhp-blue); text-transform: uppercase; letter-spacing: 2px;
+            text-shadow: 1px 1px 0px #fff, 2px 2px 0px rgba(0,0,0,0.15);
+        }
+
+        .project-list { padding: 20px 30px; }
+        .btn-project {
+            display: flex; align-items: center; background: white; margin-bottom: 15px; padding: 20px;
+            border-radius: 20px; text-decoration: none; color: var(--mhp-dark); font-weight: 700;
+            border-left: 8px solid var(--mhp-blue); box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        /* --- GIỮ NGUYÊN GIAO DIỆN CŨ CHO MÁY TÍNH --- */
+        @media (min-width: 992px) {
+            header { flex-direction: row; padding: 25px 0; }
+            .logo-img { height: 130px; }
+            .title-3d { font-size: 3.5rem; }
+            .wrapper { flex-direction: row; padding: 0 50px 100px 50px; max-height: 65vh; gap: 40px; }
+            .profile-card { flex: 5; flex-direction: row; text-align: left; gap: 30px; }
+            .avatar-box { width: 280px; height: 280px; }
+            .projects-container { flex: 5; }
+            .project-list { flex: 1; overflow-y: auto; padding: 20px 45px; }
+        }
+    </style>
 </head>
 <body>
     <div class="physics-bg">
@@ -99,7 +129,7 @@ header {
 
     <header>
         <div class="logo-container shimmer-effect">
-            <img src="logoMPH298.png" alt="MHP Logo" class="logo-img">
+            <img src="logoMPH298.jpg" alt="MHP Logo" class="logo-img">
         </div>
         <h1 class="title-3d shimmer-effect">MrHieu298's projects</h1>
     </header>
@@ -107,17 +137,12 @@ header {
     <div class="wrapper">
         <div class="profile-card">
             <div class="avatar-box">
-                <img src="mrhieu3D1.png" alt="Thầy Hiếu">
+                <img src="mrhieu3D.jpg" alt="Thầy Hiếu">
             </div>
             <div class="info-box">
                 <h2 style="color: var(--mhp-blue); margin: 0; font-size: 1.8rem;">MR.HIẾU</h2>
                 <p style="font-weight: 700; color: var(--mhp-dark); margin: 10px 0;">Giáo viên Vật Lí</p>
-                <p style="font-size: 0.95rem; line-height: 1.6; color: #555;">
-                    Một người thích học điều mới và luôn thấy mình trẻ.</p>
- 		<p style="font-size: 0.95rem; line-height: 1.6; color: #555;">
-                    Chào mừng bạn đến với thư viện ứng dụng của tôi!
-                </p>
-
+                <p style="font-size: 0.95rem; line-height: 1.6; color: #555;">Một người thích học điều mới và luôn thấy mình trẻ.</p>
                 <div style="margin-top: 25px; padding: 12px; border-radius: 15px; background: rgba(33,133,213,0.1); color: var(--mhp-blue); font-weight: bold; font-size: 0.85rem; width: fit-content;">
                     📍 Science & Technology Education
                 </div>
@@ -129,16 +154,13 @@ header {
                 <h2 class="header-3d-text">DỰ ÁN TÂM HUYẾT</h2>
             </div>
             <div class="project-list">
-                <a href="flashcardgp/index.html" class="btn-project">⚛️ FLASHCARD GP_Tạo prompt và game Flashcard</a>
-                <a href="lapp/index.html" class="btn-project">⚡ LAPP_Soạn công thức & chuyển file Latex</a>
-                <a href="project2/index.html" class="btn-project">⚡ Mạch điện xoay chiều tương tác</a>
-		<a href="project3/index.html" class="btn-project">🪐 Hệ mặt trời 3D trực quan</a>
+                <a href="flashcardgp/index.html" class="btn-project">⚛️ FLASHCARD GP</a>
+                <a href="lapp/index.html" class="btn-project">⚡ LAPP - Latex Tools</a>
+                <a href="project2/index.html" class="btn-project">⚡ Mạch điện xoay chiều</a>
+                <a href="project3/index.html" class="btn-project">🪐 Hệ mặt trời 3D</a>
                 <a href="project4/index.html" class="btn-project">🍎 Rơi tự do & Trọng trường</a>
-                <a href="project5/index.html" class="btn-project">🔭 Quang học và Thấu kính</a>
-                <a href="project6/index.html" class="btn-project">🚀 Quỹ đạo tên lửa STEM</a>
             </div>
         </div>
     </div>
 </body>
-
 </html>
