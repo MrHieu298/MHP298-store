@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FLASHCARD GP - Version 5.1 (Final Update)</title>
+    
+    <meta name="author" content="Mr.Hieu298">
+    <meta name="copyright" content="Copyright © 2025 by Mr.Hieu298. All Rights Reserved.">
+
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.21/mammoth.browser.min.js"></script>
+    
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$']], processEscapes: true },
+            options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea'], processHtmlClass: 'tex2jax_process' }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        :root { --bg: #e0e5ec; --shadow-light: #ffffff; --shadow-dark: #a3b1c6; --primary: #00b894; --accent: #ff4757; --text: #2d3436; --blue-3d: #0984e3; --purple-3d: #6c5ce7; }
+        * { box-sizing: border-box; font-family: 'Be Vietnam Pro', sans-serif; }
+        body { background-color: var(--bg); color: var(--text); margin: 0; padding: 0 20px; height: 100vh; overflow: hidden; position: relative; }
+        header { text-align: center; height: 10vh; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; }
+        .app-title-3d { font-size: 2rem; font-weight: 900; color: var(--blue-3d); text-transform: uppercase; text-shadow: 2px 2px 0px #fff, 3px 3px 0px var(--shadow-dark); margin: 0; }
+        .btn-help { position: absolute; right: 0; top: 50%; transform: translateY(-50%); padding: 10px 20px; background: var(--purple-3d); color: white; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; box-shadow: 4px 4px 8px var(--shadow-dark), -2px -2px 5px var(--shadow-light); transition: 0.3s; font-size: 0.75rem; text-transform: uppercase; }
+        .container { display: flex; gap: 20px; height: 82vh; margin-top: 5px; }
+        .section-a { flex: 0 0 48%; overflow-y: auto; padding-right: 10px; }
+        .section-b { flex: 0 0 52%; display: flex; flex-direction: column; overflow: hidden; }
+        .neu-card { background: var(--bg); border-radius: 20px; padding: 15px; box-shadow: 7px 7px 14px var(--shadow-dark), -7px -7px 14px var(--shadow-light); margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.4); }
+        h3 { color: var(--accent); margin: 0 0 10px 0; font-size: 1rem; border-bottom: 2px solid rgba(0,0,0,0.05); padding-bottom: 5px; }
+        label { display: block; margin: 8px 0 4px 5px; font-weight: 700; font-size: 0.75rem; color: #535c68; }
+        input, select, textarea { width: 100%; padding: 10px; border: none; border-radius: 12px; background: var(--bg); box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light); outline: none; font-size: 0.85rem; }
+        .btn { padding: 10px 15px; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; box-shadow: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light); transition: 0.2s; font-size: 0.8rem; text-transform: uppercase; }
+        .btn-blue { background: var(--blue-3d); color: white; }
+        .btn-green { background: var(--primary); color: white; }
+        .btn-red { background: var(--accent); color: white; }
+        .btn-orange { background: #f39c12; color: white; }
+        .btn-circle { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color:white; font-weight:bold; cursor:pointer; border:none; }
+        .prompt-wrapper { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--bg); border-radius: 20px; padding: 15px; box-shadow: 8px 8px 16px var(--shadow-dark), -8px -8px 16px var(--shadow-light); }
+        #scroll-box { flex: 1; overflow-y: auto; margin: 10px 0; padding: 15px; border-radius: 15px; box-shadow: inset 5px 5px 10px var(--shadow-dark), inset -5px -5px 10px var(--shadow-light); background: rgba(255,255,255,0.05); }
+        #prompt-display { white-space: pre-wrap; font-size: 0.82rem; line-height: 1.5; color: #333; outline: none; }
+        .q-item { margin-bottom: 12px; padding: 12px; border-radius: 15px; background: rgba(255,255,255,0.4); box-shadow: 3px 3px 6px var(--shadow-dark); }
+        .hidden { display: none; }
+        #helpModal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(224, 229, 236, 0.8); backdrop-filter: blur(10px); align-items: center; justify-content: center; }
+        .modal-content { background: var(--bg); padding: 30px; border-radius: 30px; width: 90%; max-width: 550px; box-shadow: 20px 20px 60px var(--shadow-dark), -20px -20px 60px var(--shadow-light); border: 1px solid rgba(255,255,255,0.5); position: relative; animation: slideUp 0.4s ease-out; }
+        .modal-title { color: var(--blue-3d); text-align: center; font-weight: 900; font-size: 1.4rem; text-transform: uppercase; margin-bottom: 20px; text-shadow: 1px 1px 0px white; }
+        .help-step { background: var(--bg); padding: 12px 15px; border-radius: 15px; margin-bottom: 12px; box-shadow: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light); font-size: 0.85rem; display: flex; align-items: flex-start; gap: 10px; line-height: 1.4; }
+        .step-num { background: var(--accent); color: white; min-width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.75rem; flex-shrink: 0; }
+        .close-modal { position: absolute; right: 20px; top: 15px; font-size: 28px; cursor: pointer; color: var(--accent); font-weight: 900; line-height: 1; }
+        .btn-detail { display: block; width: 100%; padding: 12px; background: var(--primary); color: white; text-align: center; border-radius: 15px; font-weight: 700; text-decoration: none; margin-top: 15px; box-shadow: 4px 4px 8px var(--shadow-dark), -2px -2px 5px var(--shadow-light); transition: 0.2s; font-size: 0.85rem; }
+        .copyright-bottom { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); font-size: 11px; color: #a2abb9; font-weight: 600; }
+        @keyframes slideUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1 class="app-title-3d">FLASHCARD GP</h1>
+        <button class="btn-help" onclick="toggleHelp(true)">Hướng dẫn sử dụng</button>
+    </header>
+
+    <div class="container">
+        <div class="section-a">
+            <div class="neu-card">
+                <h3>I. Thông tin học thuật</h3>
+                <label>1. Tên bộ Flashcard</label>
+                <input type="text" id="fc_name" placeholder="Ví dụ: Ôn tập môn học">
+                <div style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 8px; margin-top: 5px;">
+                    <div><label>2. Môn học</label><select id="fc_subject"><option disabled selected>Chọn môn</option><option>Vật lí</option><option>Toán học</option><option>Hóa học</option><option>Sinh học</option><option>Ngữ văn</option><option>Tiếng Anh</option><option>Lịch sử</option><option>Địa lí</option><option>Tin học</option><option>GDCD / KTPL</option><option>KHTN</option><option>KHXH</option><option>GDĐP</option></select></div>
+                    <div><label>3. Khối lớp</label><select id="fc_grade"><option disabled selected>Chọn khối</option><script>for(let i=1; i<=12; i++) document.write(`<option>${i}</option>`);</script></select></div>
+                    <div><label>4. Bộ sách</label><select id="fc_book"><option disabled selected>Chọn SGK</option><option>Kết nối tri thức</option><option>Chân trời sáng tạo</option><option>Cánh diều</option></select></div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 5px;">
+                    <div><label>5. Chương</label><input type="text" id="fc_chapter" placeholder="Ví dụ: Chương Sóng"></div>
+                    <div><label>6. Bài học</label><input type="text" id="fc_lesson" placeholder="Ví dụ: Bài 9: Sóng dừng"></div>
+                </div>
+                <label>7. Mục tiêu giáo dục</label>
+                <textarea id="fc_goal" rows="2" placeholder="Nêu rõ mục tiêu cần đạt được..."></textarea>
+            </div>
+
+            <div class="neu-card">
+                <h3>II. Nội dung & Hình thức</h3>
+                <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+                    <button class="btn btn-blue" onclick="toggleMode('manual')">Nhập tay</button>
+                    <button class="btn btn-blue" onclick="toggleMode('upload')">Upload Word</button>
+                    <button class="btn btn-green" onclick="toggleMode('ai')">AI gợi ý</button>
+                </div>
+                <div id="box-manual" class="hidden"><div id="qa-list"></div><button class="btn btn-green" onclick="addQA()" style="width:100%; margin-top:8px;">＋ THÊM THỂ MỚI</button></div>
+                <div id="box-upload" class="hidden">
+    <div style="padding: 20px; border: 2px dashed var(--blue-3d); border-radius: 15px; text-align: center;">
+        <p style="font-size: 0.9rem; color: #2d3436; font-weight: 600; margin: 0;">
+            📢 <span style="color: var(--accent);">LƯU Ý:</span> Sau khi dán prompt vào ô chat AI, bạn nhớ đính kèm file dữ liệu câu hỏi - đáp án (Word/PDF).
+        </p>
+    </div>
+</div>
+                <div id="box-ai" class="hidden"><textarea id="ai_req" rows="3" placeholder="Ví dụ: Tạo 10 câu về chủ đề..."></textarea></div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px;">
+                    <div><label>9. Kiểu trò chơi</label><select id="fc_style" onchange="togglePuzzleUpload()"><option value="Flip">Thẻ lật (Flipping)</option><option value="Match">Thẻ ghép (Matching)</option><option value="Puzzle">Mảnh ghép bí ẩn</option></select></div>
+                    <div><label>10. Phong cách</label><select id="fc_design">
+                        <option>Kẹo Ngọt Năng Lượng (Candy)</option>
+                        <option>Kính Mờ Tương Lai (Glassmorphism)</option>
+                        <option>Đồ Chơi Sắc Màu (Toy Block)</option>
+                        <option>Ngọt Ngào Pastel (Soft Pastel)</option>
+                        <option>Vũ Trụ Huyền Bí (Deep Space Neon)</option>
+                        <option>Rừng Xanh Kỳ Diệu (Magic Forest)</option>
+                    </select></div>
+                </div>
+                <div id="box-puzzle-img" class="hidden" style="margin-top: 10px; padding: 12px; border: 2px dashed var(--primary); border-radius: 12px;">
+                    <label>🖼️ Chọn ảnh bí ẩn (Lưu trong thư mục Flashcard):</label>
+                    <input type="file" id="puzzleImg" accept="image/*" onchange="handlePuzzleImg(event)">
+                    <p style="font-size: 11px; color: #e67e22; font-weight: 700; margin-top: 8px;">📢 LƯU Ý: Tên file ảnh thực tế trong thư mục của bạn phải trùng khớp với tên file bạn chọn ở đây.</p>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px;">
+                    <button class="btn btn-orange" onclick="location.reload()">Làm mới</button>
+                    <button class="btn btn-red" onclick="generatePrompt()">Xuất Prompt</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-b">
+            <div class="prompt-wrapper">
+                <h3>III. Bản mô tả Prompt</h3>
+                <div id="scroll-box"><div id="prompt-display" contenteditable="true"></div></div>
+                <button class="btn btn-blue" style="width:100%;" onclick="copy()">SAO CHÉP PROMPT</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="helpModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="toggleHelp(false)">&times;</span>
+            <div class="modal-title">Các bước thiết kế Flashcard</div>
+            <div class="help-step"><div class="step-num">1</div><div><b>Thông tin học thuật:</b> Điền đầy đủ thông tin học thuật tại mục I để AI hiểu ngữ cảnh.</div></div>
+            <div class="help-step"><div class="step-num">2</div><div><b>Nội dung & Hình thức:</b> Nhập dữ liệu (tay, Upload, AI gợi ý), chọn kiểu game và phong cách (màu sắc).</div></div>
+            <div class="help-step"><div class="step-num">3</div><div><b>Tạo Prompt:</b> Nhấn nút "Xuất Prompt" để lấy mô tả kỹ thuật chi tiết và nút "Sao chép prompt" để lưu vào bộ nhớ đệm.</div></div>
+            <div class="help-step"><div class="step-num">4</div><div><b>Tạo Game:</b> Dán Prompt vào Gemini/ChatGPT/Claude để nhận mã HTML và lưu lại dưới dạng "têngame.html".</div></div>
+            <div class="help-step"><div class="step-num">5</div><div><b>Trải nghiệm:</b> Mở game bằng trình duyệt web. Nếu chọn game Mảnh ghép bí ẩn, lưu file ảnh bí ẩn và file game cùng thư mục.</div></div>
+            <a href="https://docs.google.com/document/d/1ZjqVDk_K79-q7PpBKJ5ePr7YNpMa_X9C/edit?usp=sharing" target="_blank" class="btn-detail">💡 XEM HƯỚNG DẪN CHI TIẾT</a>
+        </div>
+    </div>
+
+    <div class="copyright-bottom">Copyright by MrHieu298</div>
+
+    <script>
+        let wordContent = "";
+        let puzzleImgName = "background.jpg"; 
+
+        function toggleHelp(show) { document.getElementById('helpModal').style.display = show ? 'flex' : 'none'; }
+        function toggleMode(m) {
+            ['manual', 'upload', 'ai'].forEach(id => document.getElementById('box-' + id).classList.add('hidden'));
+            document.getElementById('box-' + m).classList.remove('hidden');
+            if(m === 'manual' && document.getElementById('qa-list').children.length === 0) addQA();
+        }
+
+        function addQA() {
+            const list = document.getElementById('qa-list');
+            const div = document.createElement('div');
+            div.className = 'q-item';
+            div.innerHTML = `<div style="display:flex; justify-content:space-between;"><strong>THẺ ${list.children.length + 1}</strong><button class="btn-red btn-circle" onclick="this.parentElement.parentElement.remove(); reorder();">✕</button></div><input type="text" class="q-text" placeholder="Câu hỏi"><textarea class="a-text" placeholder="Đáp án"></textarea>`;
+            list.appendChild(div);
+        }
+
+        function reorder() { document.querySelectorAll('.q-item strong').forEach((el, i) => el.innerText = `THẺ ${i+1}`); }
+        function togglePuzzleUpload() {
+            const style = document.getElementById('fc_style').value;
+            document.getElementById('box-puzzle-img').classList.toggle('hidden', style !== 'Puzzle');
+        }
+        function handlePuzzleImg(e) { if(e.target.files[0]) puzzleImgName = e.target.files[0].name; }
+        function handleWordFile(e) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = function(event) { mammoth.extractRawText({arrayBuffer: event.target.result}).then(function(result) { wordContent = result.value; }); };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function generatePrompt() {
+           const style = document.getElementById('fc_style').value;
+    		const design = document.getElementById('fc_design').value;
+
+
+            // CẬP NHẬT 1: Thay đổi câu mở đầu Prompt
+            let p = `Hãy đóng vai một lập trình viên senior chuyên nghiệp và một giáo viên bộ môn giàu kinh nghiệm. Hãy viết mã một file HTML Game Flashcard duy nhất, chạy độc lập, giao diện hiện đại.\n\n`;
+            
+            p += `[YÊU CẦU KỸ THUẬT BẮT BUỘC - CHỐNG NGƯỢC CHỮ & CÔNG THỨC]:\n`;
+            
+            if(style === "Flip" || style === "Puzzle") {
+                // CẬP NHẬT 2: Rút gọn cụm từ "Cấu trúc lật thẻ"
+                p += `- Cấu trúc lật thẻ PHẢI gồm 3 lớp: .container (perspective), .inner (preserve-3d), .front và .back (backface-visibility: hidden).\n`;
+                p += `- Lớp .back PHẢI có thuộc tính: transform: rotateY(180deg). Đảm bảo chữ ở mặt sau KHÔNG bao giờ bị ngược.\n`;
+            p += `- CĂN CHỈNH TRẮC NGHIỆM: Nếu nội dung có dạng A, B, C, D, PHẢI trình bày theo cấu trúc danh sách chuyên nghiệp:\n`;
+p += `  + Mỗi đáp án là một khối Flexbox (display: flex; align-items: flex-start; margin-bottom: 8px;).\n`;
+p += `  + Ký hiệu (A., B., C., D.) nằm trong một vùng riêng có chiều rộng cố định (width: 30px; flex-shrink: 0; font-weight: bold;).\n`;
+p += `  + Nội dung đáp án nằm bên phải ký hiệu, tự động xuống dòng thẳng hàng với nội dung phía trên (không bị tràn dưới chữ cái A, B, C, D).\n`;
+p += `  + Toàn bộ khối đáp án PHẢI thụt lề trái (margin-left: 20px) để phân biệt rõ với nội dung câu hỏi.\n`;
+p += `- CHỐNG MẤT NỘI DUNG KHI CUỘN: Vùng chứa danh sách câu hỏi/thẻ PHẢI có padding-top và padding-bottom (khoảng 30px) để khi người dùng cuộn lên sát trên cùng hoặc xuống dưới cùng, toàn bộ thẻ vẫn nằm trong vùng nhìn thấy, không bị che bởi mép khung.\n`;
+}
+
+            p += `- CẤU HÌNH CÔNG THỨC: Sử dụng MathJax 3. Trong JS, PHẢI dùng String.raw\` \` cho mảng dữ liệu. PHẢI thêm CSS: mjx-container { display: inline-block !important; vertical-align: baseline !important; margin: 0 4px !important; line-height: inherit !important; position: relative; top: 0.25px;}. 
+Các ký hiệu toán học lẻ PHẢI nằm cùng dòng văn bản, không được tự ý xuống dòng. Gọi MathJax.typesetPromise() ngay sau khi hiển thị nội dung thẻ mới.\n`;
+            p += `- CHỐNG TRÀN: .card-content { white-space: normal; word-wrap: break-word; line-height: 1.4; text-align: center; width: 100%; }\n\n`;
+
+            p += `[CỐ ĐỊNH GIAO DIỆN & SIDEBAR]:\n`;
+            if(style === "Puzzle") {
+                p += `- TỈ LỆ MÀN HÌNH (40/60): Sidebar Trái (40%) | Vùng Game Phải (60%).\n`;
+                p += `- SIDEBAR: Được chia thành 2 phần dọc (1/3 trên cho Thông tin - 2/3 dưới cho Vùng tương tác lật thẻ và Nút bấm).\n`;
+                p += `- THÔNG TIN HỌC THUẬT TRÊN SIDEBAR: Chỉ hiển thị 3 mục: Tên bộ Flashcard, Môn học, Chương. Các thông tin khác hãy ẩn đi để tối ưu không gian.\n`;
+                p += `- NÚT BẤM ĐIỀU KHIỂN: Nút "LÀM MỚI" và nút "GHI ĐIỂM" phải được thiết kế nhỏ gọn, nằm trên cùng một hàng ngang dưới chân Sidebar. Màu sắc: "LÀM MỚI" (Orange/Amber), "GHI ĐIỂM" (Green/Emerald), thiết kế 3D hoặc Neumorphism đồng nhất với giao diện ${design}.\n`;
+            } else {
+                p += `- TỈ LỆ MÀN HÌNH (25/75): Sidebar Trái (25%) | Vùng Game Phải (75%).\n`;
+                p += `- SIDEBAR: Hiển thị đầy đủ Thông tin học thuật. PHẢI có nút "LÀM MỚI" cố định ở chân Sidebar để xáo trộn ngẫu nhiên dữ liệu.\n`;
+            }
+            p += `\n`;
+
+            if(style === "Match") {
+                p += `[CẤU TRÚC GAME THẺ GHÉP]:\n`;
+                p += `- THIẾT KẾ LƯỚI (GRID): Hiển thị các thẻ theo dạng lưới (ví dụ lưới 3x3 cho 9 cặp hoặc tự động chia lưới cân đối). Các thẻ Câu hỏi và Đáp án được xáo trộn vị trí hoàn toàn.\n`;
+                p += `- KÝ HIỆU THẺ (H/Đ): Mỗi thẻ PHẢI có một nhãn ký hiệu nằm gọn ở góc trên bên trái. Thẻ câu hỏi ghi "H", thẻ đáp án ghi "Đ". Size chữ ký hiệu nhỏ gọn, cân đối với nội dung thẻ, màu sắc hài hòa với phong cách ${design}.\n`;
+                p += `- GIAO DIỆN THẺ: Thẻ hiển thị nội dung trực tiếp, KHÔNG lật mặt. Sử dụng hiệu ứng hover và active chuyên nghiệp.\n`;
+                p += `- LOGIC GHÉP: Click chọn thẻ thứ nhất -> Highlight màu xanh. Click chọn thẻ thứ hai -> Nếu đúng cặp (Q-A), cả hai thẻ biến mất hoặc đổi màu xanh cố định. Nếu sai, đổi màu đỏ báo lỗi rồi reset.\n\n`;
+            } else if(style === "Flip") {
+                p += `[CẤU TRÚC GAME THẺ LẬT]:\n- Thẻ 3D lớn ở giữa vùng game. Luôn có nút "TIẾP THEO" và "TRỞ VỀ" hiển thị ở bên dưới thẻ để điều hướng.\n\n`;
+            } else if(style === "Puzzle") {
+                p += `[CẤU TRÚC GAME MẢNH GHÉP]:\n`;
+                p += `- ĐƯỜNG DẪN ẢNH ĐỘNG: Phần khung game phải PHẢI load file ảnh có tên chính xác là "${puzzleImgName}". Lập trình viên PHẢI thiết lập src cho ảnh chỉ chứa tên file (ví dụ: src="${puzzleImgName}") để game tự động nhận diện ảnh khi file ảnh và file game nằm cùng thư mục.\n`;
+// CẬP NHẬT 3: Loại bỏ chỉ dẫn hiển thị tại phần thẻ số/game
+                p += `- ĐỘ KÍN CỦA MẢNH GHÉP: Các thẻ số PHẢI che phủ hoàn toàn ảnh bí ẩn bên dưới. Thiết lập \`grid-gap: 0px;\` cho khung chứa lưới thẻ. Các thẻ số PHẢI có \`margin: 0;\` và \`border: 0.5px solid rgba(255,255,255,0.2);\` (viền cực mảnh) để đảm bảo các cạnh khít sát nhau 100%, không để lộ bất kỳ kẽ hở nào của ảnh bí ẩn trước khi mở thẻ.\n`;
+p += `- KHÍT KHUNG HÌNH: Đảm bảo tổng kích thước của các thẻ số khớp chính xác với kích thước hiển thị của ảnh bí ẩn.\n`;
+                p += `- LOGIC MẢNH GHÉP: Lưới ô số che ảnh ở khung phải. Click số ở lưới -> hiện Câu hỏi bên Sidebar trái. Nhấn "Ghi điểm" -> mảnh che biến mất để lộ ảnh.\n\n`;
+            }
+
+            p += `[THÔNG TIN HỌC THUẬT & PHONG CÁCH]:\n- Phong cách: ${design}\n`;
+            if(getVal('fc_name')) p += `- Bộ thẻ: ${getVal('fc_name')}\n`;
+            if(getVal('fc_subject')) p += `- Môn: ${getVal('fc_subject')}\n`;
+            if(getVal('fc_grade')) p += `- Khối: ${getVal('fc_grade')}\n`;
+            if(getVal('fc_book')) p += `- Sách: ${getVal('fc_book')}\n`;
+            if(getVal('fc_chapter')) p += `- Chương: ${getVal('fc_chapter')}\n`;
+            if(getVal('fc_lesson')) p += `- Bài: ${getVal('fc_lesson')}\n`;
+            if(getVal('fc_goal')) p += `- Mục tiêu: ${getVal('fc_goal')}\n\n`;
+
+            p += `[DỮ LIỆU CÂU HỎI]:\n`;
+            if(!document.getElementById('box-manual').classList.contains('hidden')) {
+                document.querySelectorAll('.q-item').forEach(it => {
+                    const q = it.querySelector('.q-text').value; const a = it.querySelector('.a-text').value;
+                    if(q && a) p += `Q: ${q} | A: ${a}\n`;
+                });
+            } else if(!document.getElementById('box-upload').classList.contains('hidden')) {
+    // Nếu đang mở tab Upload, chỉ xuất câu lệnh yêu cầu AI tự đọc file
+    p += `- QUAN TRỌNG: Bạn hãy lấy toàn bộ dữ liệu câu hỏi và đáp án từ file tôi đính kèm dưới đây để tạo game. Hãy phân tích kỹ cấu trúc file để trích xuất nội dung chính xác.Hãy phân tích kỹ cấu trúc file để trích xuất nội dung chính xác. Sử dụng định dạng LaTeX cho các công thức ví dụ viết là $N.A^{-1}.m^{-1}$. CHỈ THỊ CẤM TRÍCH DẪN: Tuyệt đối KHÔNG được thêm các ký hiệu trích dẫn như, [1], hoặc bất kỳ nguồn tham chiếu nào vào nội dung văn bản. Toàn bộ nội dung hiển thị phải là văn bản sạch, y hệt như trong file gốc.\n`;
+} else { 
+                p += `Dựa trên các Thông tin Môn,Sách, Chương, Bài trên, hãy soạn các cặp Q và A học thuật chính xác theo yêu cầu sau:\n`;
+                p += getVal('ai_req'); 
+            }
+
+            document.getElementById('prompt-display').innerText = p;
+        }
+
+        function copy() {
+            const text = document.getElementById('prompt-display').innerText;
+            if(!text) return;
+            navigator.clipboard.writeText(text).then(() => alert("Đã sao chép Prompt!"));
+        }
+function getVal(id) {
+    const el = document.getElementById(id);
+    return el ? el.value : "";
+}    
+</script>
+</body>
+</html>

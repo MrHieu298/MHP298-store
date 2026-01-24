@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LAPP Platinum - Stable Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.21/mammoth.browser.min.js"></script>
+
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['$', '$']], displayMath: [['$$', '$$']], processEscapes: true },
+            svg: { fontCache: 'global' },
+            mml: { forceMathML: true }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Quicksand:wght@500;700&display=swap');
+        
+        body { font-family: 'Quicksand', sans-serif; background: #fdfbf7; color: #475569; height: 100vh; overflow: hidden; margin: 0; position: relative; }
+        .hidden-screen { display: none !important; }
+
+        .bg-watermark-3d {
+            position: absolute; font-family: 'Montserrat', sans-serif; font-size: 15vw;
+            font-weight: 900; color: rgba(30, 64, 175, 0.07); transform: rotate(-15deg);
+            z-index: -1; pointer-events: none; white-space: nowrap;
+        }
+
+        .btn-home-main {
+            width: 480px; height: 120px;
+            display: flex; align-items: center; justify-content: center; text-align: center;
+            border-radius: 2.5rem; font-weight: 900; font-size: 1.25rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            text-transform: uppercase; line-height: 1.2; padding: 0 2rem;
+        }
+        .btn-home-main:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.15); }
+
+        .main-container-a { display: grid; grid-template-columns: 420px 1fr; gap: 0.75rem; height: 100vh; padding: 0.5rem; position: relative; z-index: 10; }
+        .left-panel-a { background: white; border-radius: 1.5rem; border: 1px solid #e2e8f0; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .scroll-area-a { overflow-y: auto; flex: 1; padding: 12px; }
+        .section-label-a { font-size: 9px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.1em; margin: 15px 0 8px 2px; display: block; border-bottom: 1px solid #f1f5f9; }
+
+        .btn-3d-a { background: #ffffff; border: 1px solid #f1f5f9; border-radius: 8px; min-height: 38px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.03); padding: 4px; }
+        .btn-3d-a:hover { border-color: #3b82f6; transform: translateY(-2px); background: #f8fafc; box-shadow: 0 4px 8px rgba(59, 130, 246, 0.1); }
+        .group-structure .btn-3d-a { border-bottom: 3px solid #3b82f6; color: #1d4ed8; }
+        .group-greek .btn-3d-a { border-bottom: 3px solid #ef4444; color: #b91c1c; }
+        .group-math .btn-3d-a { border-bottom: 3px solid #f59e0b; color: #b45309; }
+        .group-arrow .btn-3d-a { border-bottom: 3px solid #10b981; color: #047857; }
+
+        .box-input-a { background: #f0f9ff; border: 2px solid #bae6fd; border-radius: 1.5rem; flex: 1; position: relative; padding: 1.25rem; }
+        .box-preview-a { background: #f0fdf4; border: 2px solid #dcfce7; border-radius: 1.5rem; flex: 1.2; overflow-y: auto; padding: 1.5rem; position: relative; }
+        .inner-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 4rem; font-weight: 900; color: rgba(0,0,0,0.03); pointer-events: none; z-index: 0; }
+
+        .main-container-b { display: grid; grid-template-columns: 35% 65%; height: calc(100vh - 80px); padding: 1rem; gap: 1rem; position: relative; z-index: 10; }
+        .side-panel-b { display: flex; flex-direction: column; gap: 1rem; justify-content: center; }
+        .display-area-b { background: white; border-radius: 2rem; border: 2px solid #e2e8f0; overflow-y: auto; padding: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.05); position: relative; }
+
+        .guide-step-card {
+            background: #ffffff; border-left: 4px solid #3b82f6; padding: 1rem; border-radius: 0.75rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04); transition: all 0.3s;
+        }
+        .guide-step-card h4 { font-size: 0.9rem; margin-bottom: 0.25rem; }
+        .guide-step-card p { font-size: 0.8rem; line-height: 1.4; color: #64748b; }
+        .guide-tag { background: #f1f5f9; padding: 1px 4px; border-radius: 4px; font-family: monospace; font-weight: bold; color: #1e40af; }
+    </style>
+</head>
+<body>
+    <div class="bg-watermark-3d flex items-center justify-center h-full w-full">Mr.Hieu</div>
+
+    <div id="home-screen" class="h-screen w-full flex flex-col items-center justify-center relative z-20 px-4">
+        <h1 class="text-9xl font-black text-blue-700 mb-0 uppercase tracking-tighter drop-shadow-2xl">LAPP</h1>
+        <p class="text-blue-600 font-black text-xl mb-1 mt-[-10px] tracking-widest uppercase">LATEX APPLICATION</p>
+        <p class="text-slate-400 font-bold text-sm mb-16 uppercase">Copyright by Mr.Hieu298</p>
+        <div class="flex flex-wrap gap-8 justify-center">
+            <button onclick="nav('section-a')" class="btn-home-main bg-blue-600 text-white shadow-[0_12px_0_#1e3a8a] active:shadow-none active:translate-y-2">SOẠN VĂN BẢN LATEX</button>
+            <button onclick="nav('section-b')" class="btn-home-main bg-emerald-600 text-white shadow-[0_12px_0_#064e3b] active:shadow-none active:translate-y-2">CHUYỂN FILE TỪ LATEX<br>SANG EQUATION</button>
+        </div>
+    </div>
+
+    <div id="section-a" class="hidden-screen main-container-a">
+        <div class="left-panel-a">
+            <div class="p-4 bg-slate-50 border-b flex justify-between items-center">
+                <span class="font-black text-2xl text-blue-800">LAPP v40</span>
+                <div class="flex gap-2 items-center">
+                    <button onclick="toggleHelp()" class="px-4 py-1.5 bg-amber-500 text-white rounded-xl text-[10px] font-black uppercase shadow-lg hover:bg-amber-600">Hướng dẫn</button>
+                    <button onclick="nav('home-screen')" class="px-5 py-1.5 border-2 border-slate-200 rounded-xl font-black text-slate-400 hover:bg-rose-50 hover:text-rose-500 hover:border-rose-200 transition-all uppercase text-[10px]">Thoát</button>
+                </div>
+            </div>
+            <div class="scroll-area-a">
+                <div class="group-structure">
+                    <span class="section-label-a">Cấu trúc chính (16 phím)</span>
+                    <div class="grid grid-cols-4 gap-2 mb-4">
+                        <button onclick="smartInsert('\\frac{', '}{}')" class="btn-3d-a">$\frac{a}{b}$</button>
+                        <button onclick="smartInsert('\\sqrt{', '}')" class="btn-3d-a">$\sqrt{x}$</button>
+                        <button onclick="smartInsert('\\sqrt[', ']{}')" class="btn-3d-a">$\sqrt[n]{x}$</button>
+                        <button onclick="smartInsert('^{', '}')" class="btn-3d-a">$x^n$</button>
+                        <button onclick="smartInsert('_{', '}')" class="btn-3d-a">$x_i$</button>
+                        <button onclick="insert('_{}^{}X')" class="btn-3d-a">${}_{Z}^{A}X$</button>
+                        <button onclick="smartInsert('\\vec{', '}')" class="btn-3d-a">$\vec{x}$</button>
+                        <button onclick="smartInsert('\\overline{', '}')" class="btn-3d-a">$\overline{x}$</button>
+                        <button onclick="smartInsert('\\int_{', '}^{}')" class="btn-3d-a">$\int_a^b$</button>
+                        <button onclick="smartInsert('\\sum_{', '}^{}')" class="btn-3d-a">$\sum$</button>
+                        <button onclick="smartInsert('\\prod_{', '}^{}')" class="btn-3d-a">$\prod$</button>
+                        <button onclick="smartInsert('\\left| ', ' \\right|')" class="btn-3d-a">$|x|$</button>
+                        <button onclick="smartInsert('\\left( ', ' \\right)')" class="btn-3d-a">$(x)$</button>
+                        <button onclick="smartInsert('\\left[ ', ' \\right]')" class="btn-3d-a">$[x]$</button>
+                        <button onclick="smartInsert('\\left\\{ ', ' \\right\\}')" class="btn-3d-a">$\{x\}$</button>
+                        <button onclick="insert('\\lim_{n \\to \\infty}')" class="btn-3d-a">$\lim$</button>
+                    </div>
+                </div>
+                <div class="group-greek">
+                    <span class="section-label-a">Ký hiệu Hy Lạp (20 phím)</span>
+                    <div class="grid grid-cols-5 gap-1.5 mb-4" id="greek-btns"></div>
+                </div>
+                <div class="group-math">
+                    <span class="section-label-a">Toán & Hình học (20 phím)</span>
+                    <div class="grid grid-cols-4 gap-2 mb-4">
+                        <script>
+                            const mathOps = ['\\pm','\\neq','\\ge','\\le','\\approx','\\infty','\\cdot','\\times','\\angle','\\triangle','\\perp','\\parallel','\\in','\\subset','\\cup','\\cap','\\emptyset','\\forall','\\exists','\\partial'];
+                            mathOps.forEach(op => document.write(`<button onclick="insert('${op} ')" class="btn-3d-a">$${op}$</button>`));
+                        </script>
+                    </div>
+                </div>
+                <div class="group-arrow">
+                    <span class="section-label-a">Mũi tên (12 phím)</span>
+                    <div class="grid grid-cols-4 gap-2">
+                        <script>
+                            const arrows = ['rightarrow','Rightarrow','Leftrightarrow','rightleftharpoons','uparrow','downarrow','leftrightarrow','leftarrow','nearrow','searrow','rightharpoonup','twoheadrightarrow'];
+                            arrows.forEach(a => document.write(`<button onclick="insert('\\\\${a} ')" class="btn-3d-a">$\\${a}$</button>`));
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-2 h-full">
+            <div class="box-input-a">
+                <textarea id="editor-a" class="w-full h-full text-xl font-bold bg-transparent outline-none border-none resize-none z-10" placeholder="Nhập văn bản và $ Công thức $..."></textarea>
+                <button onclick="clearAll()" class="absolute bottom-4 right-4 text-[10px] font-bold text-rose-500 bg-white px-3 py-1.5 rounded-lg shadow-sm border border-rose-100 hover:bg-rose-50 z-20 transition-all uppercase">LÀM MỚI</button>
+            </div>
+            <div id="preview-a" class="box-preview-a text-2xl">
+                <div class="inner-watermark">Mr.Hieu298</div>
+                <div id="math-preview-a" class="relative z-10 text-slate-800"></div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <button onclick="copyRawLatex()" class="p-6 bg-gradient-to-br from-indigo-500 to-blue-600 text-white rounded-2xl font-black uppercase text-sm shadow-xl hover:shadow-2xl hover:scale-[1.02] active:scale-95 transition-all">Sao chép công thức Latex</button>
+                <button onclick="copyForWord()" class="p-6 bg-gradient-to-br from-emerald-400 to-teal-600 text-white rounded-2xl font-black uppercase text-sm shadow-xl hover:shadow-2xl hover:scale-[1.02] active:scale-95 transition-all">Sao chép công thức equation</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="section-b" class="hidden-screen h-screen w-full flex flex-col">
+        <div class="p-4 bg-white border-b flex justify-between items-center px-8">
+            <span class="font-black text-2xl text-blue-800">LAPP v40</span>
+            <h2 class="text-3xl font-black text-blue-700 uppercase tracking-tighter text-center flex-1">CHUYỂN ĐỔI FILE WORD CHỨA CÔNG THỨC LATEX</h2>
+            <button onclick="nav('home-screen')" class="px-6 py-2 border-2 border-slate-200 rounded-xl font-black text-slate-400 hover:bg-rose-50 hover:text-rose-500 hover:border-rose-200 transition-all uppercase text-[10px]">Thoát</button>
+        </div>
+
+        <div class="main-container-b">
+            <div class="side-panel-b">
+                <div class="bg-blue-50 p-8 rounded-[2.5rem] border-2 border-blue-100 shadow-inner flex flex-col gap-6">
+                    <input type="file" id="input-file-b" class="hidden" accept=".docx" onchange="processFileB(this)">
+                    <button onclick="document.getElementById('input-file-b').click()" class="w-full py-10 bg-white text-blue-600 border-4 border-blue-600 rounded-[2rem] font-black text-xl shadow-xl hover:bg-blue-600 hover:text-white transition-all transform hover:-translate-y-1">📂 TẢI FILE WORD LÊN</button>
+                    <button id="btn-copy-b" onclick="copyFinalB()" class="w-full py-10 bg-emerald-600 text-white rounded-[2rem] font-black text-xl shadow-xl opacity-50 cursor-not-allowed hover:bg-emerald-700 transition-all transform hover:-translate-y-1" disabled>📋 SAO CHÉP NỘI DUNG<br>CHUYỂN ĐỔI</button>
+                </div>
+            </div>
+            <div class="display-area-b">
+                <div class="absolute inset-0 flex items-center justify-center pointer-events-none" style="z-index: 0; opacity: 0.08;">
+                    <span style="font-family: 'Montserrat'; font-size: 5.2rem; font-weight: 900; color: #1e3a8a; transform: rotate(-10deg); filter: drop-shadow(10px 10px 5px rgba(0,0,0,0.3)); letter-spacing: -2px;">Mr.Hieu298</span>
+                </div>
+                <div id="preview-content-b" class="relative z-10 text-xl leading-relaxed font-serif">
+                     <div class="h-full flex flex-col items-center justify-start text-slate-300 py-10">
+                        <svg class="w-16 h-16 mb-4 opacity-15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        <p class="font-bold uppercase tracking-widest text-xs opacity-60">Nội dung sẽ hiển thị tại đây</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="help-modal" class="fixed inset-0 bg-slate-900/60 hidden flex items-center justify-center p-4 z-[100] backdrop-blur-sm">
+        <div class="bg-white rounded-[2rem] p-8 w-full max-w-[35vw] max-h-[85vh] overflow-y-auto relative shadow-2xl border-4 border-blue-50">
+            <div class="flex justify-between items-center mb-6 border-b pb-4">
+                <h3 class="text-xl font-black text-blue-700 uppercase tracking-tight">Cẩm nang LAPP</h3>
+                <button onclick="toggleHelp()" class="px-4 py-1.5 border-2 border-slate-200 rounded-xl font-black text-slate-400 hover:bg-rose-50 hover:text-rose-500 hover:border-rose-200 transition-all uppercase text-[10px]">Thoát</button>
+            </div>
+            
+            <div class="space-y-4">
+                <div class="guide-step-card border-blue-500">
+                    <h4 class="font-black text-blue-900 uppercase">1. Mũ & Chỉ số nhanh</h4>
+                    <p>Dùng <span class="guide-tag">^</span> cho số mũ (VD: x^2) và <span class="guide-tag">_</span> cho chỉ số (VD: a_i). Hệ thống sẽ tự thêm ngoặc nhọn <span class="guide-tag">{}</span> giúp bạn.</p>
+                </div>
+
+                <div class="guide-step-card border-emerald-500">
+                    <h4 class="font-black text-emerald-900 uppercase">2. Công thức Hóa học</h4>
+                    <p>Chỉ cần gõ tên chất như <span class="guide-tag">H2SO4</span> hoặc <span class="guide-tag">KMnO4</span>, LAPP sẽ tự động chuyển các con số thành chỉ số dưới cực đẹp.</p>
+                </div>
+
+                <div class="guide-step-card border-purple-500">
+                    <h4 class="font-black text-purple-900 uppercase">3. Quét chọn nhanh</h4>
+                    <p>Hãy <span class="text-purple-600 font-bold">bôi đen</span> một đoạn chữ, sau đó nhấn phím cấu trúc (VD: Căn thức). Đoạn chữ đó sẽ được tự động đưa vào trong công thức.</p>
+                </div>
+
+                <div class="guide-step-card border-amber-500">
+                    <h4 class="font-black text-amber-900 uppercase">4. Dấu hỏi nhắc nhở</h4>
+                    <p>Các vị trí trống hiện dấu <b class="text-rose-500">"?"</b>. Di chuyển con trỏ vào để gõ, dấu hỏi sẽ tự ẩn đi.</p>
+                </div>
+
+                <div class="guide-step-card border-indigo-500">
+                    <h4 class="font-black text-indigo-900 uppercase">5. Xuất sang Word</h4>
+                    <p>Nhấn <b class="text-indigo-600">"Sao chép Equation"</b> và sang Word nhấn <b>Ctrl + V</b> để hoàn tất.</p>
+                </div>
+            </div>
+            
+            <div class="mt-8">
+                <button onclick="toggleHelp()" class="w-full py-3 bg-blue-600 text-white rounded-xl font-black uppercase text-xs shadow-lg hover:bg-blue-700 transition-all">Đã rõ!</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const editorA = document.getElementById('editor-a');
+        const previewA = document.getElementById('math-preview-a');
+
+        function latexLogic(s) {
+            if (!s) return "";
+            // Xử lý mũi tên và dấu nhân nhanh
+            s = s.replace(/->/g, '\\rightarrow ').replace(/\*/g, '\\cdot ');
+            // Xử lý chỉ số và số mũ đồng thời
+            s = s.replace(/_([0-9a-zA-Z])\^([0-9a-zA-Z])/g, '_{$1}^{$2}');
+            s = s.replace(/\^([0-9a-zA-Z])_([0-9a-zA-Z])/g, '^{$1}_{$2}');
+            // Xử lý công thức hóa học tự động
+            s = s.replace(/([A-Z][a-z]?)(\d+)/g, '$1_{$2}');
+            
+            // Xử lý phân số tự động bằng dấu "/"
+            const fracRegex = /([^\s\/\(\)]+|\([^)]+\))\s*\/\s*([^\s\/\(\)]+|\([^)]+\))/g;
+            while (s.includes('/')) {
+                let next = s.replace(fracRegex, (match, p1, p2) => {
+                    let t = p1.startsWith('(') ? p1.slice(1, -1) : p1;
+                    let m = p2.startsWith('(') ? p2.slice(1, -1) : p2;
+                    return `\\frac{${t}}{${m}}`;
+                });
+                if (next === s) break;
+                s = next;
+            }
+
+            const cursorPos = editorA.selectionStart;
+            let result = "";
+            let depth = 0;
+            const colors = ['#8b5cf6', '#ef4444', '#3b82f6', '#f59e0b', '#10b981'];
+
+            for (let i = 0; i < s.length; i++) {
+                if (s[i] === '{') {
+                    if (s[i+1] === '}') {
+                        // LOGIC DẤU HỎI THÔNG MINH CỦA BẢN 7b
+                        // Chỉ mất dấu ? khi con trỏ ở ĐÚNG vị trí giữa i và i+1
+                        const isExactlyInside = (cursorPos === i + 1);
+                        if (!isExactlyInside) {
+                            result += `{\\color{${colors[depth % colors.length]}}{?}}`;
+                        } else {
+                            result += '{\\phantom{?}}';
+                        }
+                        i++;
+                    } else {
+                        result += '{';
+                        depth++;
+                    }
+                } else if (s[i] === '}') {
+                    result += '}';
+                    depth = Math.max(0, depth - 1);
+                } else {
+                    result += s[i];
+                }
+            }
+            return result;
+        }
+
+        function updatePreview() {
+            const lines = editorA.value.split('\n');
+            previewA.innerHTML = lines.map(l => {
+                const rendered = l.replace(/\$([^\$]+)\$/g, (match, p1) => `$${latexLogic(p1)}$`);
+                return `<div class='mb-2'>${rendered}</div>`;
+            }).join('');
+            if (window.MathJax) MathJax.typesetPromise([previewA]);
+        }
+
+        // Đảm bảo cập nhật khi gõ, click hoặc dùng phím điều hướng
+        editorA.addEventListener('input', updatePreview);
+        editorA.addEventListener('click', updatePreview);
+        editorA.addEventListener('keyup', updatePreview);
+
+        function insert(val) {
+            const start = editorA.selectionStart;
+            editorA.value = editorA.value.substring(0, start) + val + editorA.value.substring(editorA.selectionEnd);
+            editorA.focus();
+            editorA.setSelectionRange(start + val.length, start + val.length);
+            updatePreview();
+        }
+
+        function smartInsert(open, close) {
+            const start = editorA.selectionStart;
+            const end = editorA.selectionEnd;
+            const selected = editorA.value.substring(start, end);
+            const full = `${open}${selected}${close}`;
+            editorA.value = editorA.value.substring(0, start) + full + editorA.value.substring(end);
+            editorA.focus();
+            let caret = selected.length > 0 ? (close.includes('{}') ? start + open.length + selected.length + close.indexOf('{}') + 1 : start + full.length) : start + open.length;
+            editorA.setSelectionRange(caret, caret);
+            updatePreview();
+        }
+
+        // Khởi tạo các phím Hy Lạp đầy đủ 20 phím
+        const greeks = ['alpha','beta','gamma','delta','pi','Delta','lambda','omega','Omega','phi','theta','mu','sigma','rho','eta','epsilon','tau','zeta','psi','chi'];
+        greeks.forEach(g => {
+            const btn = document.createElement('button');
+            btn.className = 'btn-3d-a'; btn.innerHTML = `$\\${g}$`;
+            btn.onclick = () => insert(`\\${g} `);
+            document.getElementById('greek-btns').appendChild(btn);
+        });
+
+        function nav(id) {
+            document.querySelectorAll('#home-screen, #section-a, #section-b').forEach(s => s.classList.add('hidden-screen'));
+            document.getElementById(id).classList.remove('hidden-screen');
+        }
+
+        function toggleHelp() { document.getElementById('help-modal').classList.toggle('hidden'); }
+
+        async function copyRawLatex() {
+            await navigator.clipboard.writeText(editorA.value);
+            alert("Đã copy công thức Latex!");
+        }
+
+        async function copyForWord() {
+            const clone = previewA.cloneNode(true);
+            clone.querySelectorAll('.MathJax math').forEach(m => m.parentElement.innerHTML = m.outerHTML);
+            const blob = new Blob([`<div style="font-family:'Times New Roman'; font-size:12pt;">${clone.innerHTML}</div>`], { type: "text/html" });
+            await navigator.clipboard.write([new ClipboardItem({ ["text/html"]: blob })]);
+            alert("Đã copy Equation thành công!");
+        }
+
+        function processFileB(input) {
+            const file = input.files[0];
+            const preview = document.getElementById('preview-content-b');
+            const btn = document.getElementById('btn-copy-b');
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                mammoth.convertToHtml({ arrayBuffer: e.target.result }).then(result => {
+                    preview.innerHTML = result.value.replace(/\$([^\$]+)\$/g, (m, p1) => `$${latexLogic(p1)}$`);
+                    MathJax.typesetPromise([preview]);
+                    btn.disabled = false; btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                });
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        async function copyFinalB() {
+            const preview = document.getElementById('preview-content-b');
+            const clone = preview.cloneNode(true);
+            clone.querySelectorAll('.MathJax math').forEach(m => m.parentElement.innerHTML = m.outerHTML);
+            const blob = new Blob([`<div style="font-family:'Times New Roman'; font-size:13pt;">${clone.innerHTML}</div>`], { type: "text/html" });
+            await navigator.clipboard.write([new ClipboardItem({ ["text/html"]: blob })]);
+            alert("Đã copy nội dung cho Word!");
+        }
+
+        function clearAll() { 
+            editorA.value = ""; 
+            previewA.innerHTML = '<div class="inner-watermark">Mr.Hieu298</div>'; 
+            editorA.focus(); 
+        }
+    </script>
+</body>
+</html>
