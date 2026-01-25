@@ -191,12 +191,7 @@
                 // CẬP NHẬT 2: Rút gọn cụm từ "Cấu trúc lật thẻ"
                 p += `- Cấu trúc lật thẻ PHẢI gồm 3 lớp: .container (perspective), .inner (preserve-3d), .front và .back (backface-visibility: hidden).\n`;
                 p += `- Lớp .back PHẢI có thuộc tính: transform: rotateY(180deg). Đảm bảo chữ ở mặt sau KHÔNG bao giờ bị ngược.\n`;
-            p += `- CĂN CHỈNH TRẮC NGHIỆM: Nếu nội dung có dạng A, B, C, D, PHẢI trình bày theo cấu trúc danh sách chuyên nghiệp:\n`;
-p += `  + Mỗi đáp án là một khối Flexbox (display: flex; align-items: flex-start; margin-bottom: 8px;).\n`;
-p += `  + Ký hiệu (A., B., C., D.) nằm trong một vùng riêng có chiều rộng cố định (width: 30px; flex-shrink: 0; font-weight: bold;).\n`;
-p += `  + Nội dung đáp án nằm bên phải ký hiệu, tự động xuống dòng thẳng hàng với nội dung phía trên (không bị tràn dưới chữ cái A, B, C, D).\n`;
-p += `  + Toàn bộ khối đáp án PHẢI thụt lề trái (margin-left: 20px) để phân biệt rõ với nội dung câu hỏi.\n`;
-p += `- CHỐNG MẤT NỘI DUNG KHI CUỘN: Vùng chứa danh sách câu hỏi/thẻ PHẢI có padding-top và padding-bottom (khoảng 30px) để khi người dùng cuộn lên sát trên cùng hoặc xuống dưới cùng, toàn bộ thẻ vẫn nằm trong vùng nhìn thấy, không bị che bởi mép khung.\n`;
+                p += `- CHỐNG MẤT NỘI DUNG KHI CUỘN: Vùng chứa danh sách câu hỏi/thẻ PHẢI có padding-top và padding-bottom (khoảng 30px) để khi người dùng cuộn lên sát trên cùng hoặc xuống dưới cùng, toàn bộ thẻ vẫn nằm trong vùng nhìn thấy, không bị che bởi mép khung.\n`;
 }
 
             p += `- CẤU HÌNH CÔNG THỨC: Sử dụng MathJax 3. Trong JS, PHẢI dùng String.raw\` \` cho mảng dữ liệu. PHẢI thêm CSS: mjx-container { display: inline-block !important; vertical-align: baseline !important; margin: 0 4px !important; line-height: inherit !important; position: relative; top: 0.25px;}. 
@@ -250,7 +245,12 @@ p += `- KHÍT KHUNG HÌNH: Đảm bảo tổng kích thước của các thẻ s
             } else if(!document.getElementById('box-upload').classList.contains('hidden')) {
     // Nếu đang mở tab Upload, chỉ xuất câu lệnh yêu cầu AI tự đọc file
     p += `- QUAN TRỌNG: Bạn hãy lấy toàn bộ dữ liệu câu hỏi và đáp án từ file tôi đính kèm dưới đây để tạo game. Hãy phân tích kỹ cấu trúc file để trích xuất nội dung chính xác.Hãy phân tích kỹ cấu trúc file để trích xuất nội dung chính xác. Sử dụng định dạng LaTeX cho các công thức ví dụ viết là $N.A^{-1}.m^{-1}$. CHỈ THỊ CẤM TRÍCH DẪN: Tuyệt đối KHÔNG được thêm các ký hiệu trích dẫn như, [1], hoặc bất kỳ nguồn tham chiếu nào vào nội dung văn bản. Toàn bộ nội dung hiển thị phải là văn bản sạch, y hệt như trong file gốc.\n`;
-} else { 
+    p += `- CĂN CHỈNH TRẮC NGHIỆM: Nếu nội dung có dạng A, B, C, D, PHẢI trình bày theo cấu trúc danh sách chuyên nghiệp:\n`;
+    p += `  + Mỗi đáp án là một khối Flexbox (display: flex; align-items: flex-start; margin-bottom: 8px;).\n`;
+    p += `  + Ký hiệu (A., B., C., D.) nằm trong một vùng riêng có chiều rộng cố định (width: 30px; flex-shrink: 0; font-weight: bold;).\n`;
+    p += `  + Nội dung đáp án nằm bên phải ký hiệu, tự động xuống dòng thẳng hàng với nội dung phía trên (không bị tràn dưới chữ cái A, B, C, D).\n`;
+    p += `  + Toàn bộ khối đáp án PHẢI thụt lề trái (margin-left: 20px) để phân biệt rõ với nội dung câu hỏi.\n`;
+            } else { 
                 p += `Dựa trên các Thông tin Môn,Sách, Chương, Bài trên, hãy soạn các cặp Q và A học thuật chính xác theo yêu cầu sau:\n`;
                 p += getVal('ai_req'); 
             }
@@ -270,3 +270,4 @@ function getVal(id) {
 </script>
 </body>
 </html>
+
