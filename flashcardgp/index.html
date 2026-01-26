@@ -253,6 +253,18 @@ p += `- KHÍT KHUNG HÌNH: Đảm bảo tổng kích thước của các thẻ s
             } else { 
                 p += `Dựa trên các Thông tin Môn,Sách, Chương, Bài trên, hãy soạn các cặp Q và A học thuật chính xác theo yêu cầu sau:\n`;
                 p += getVal('ai_req'); 
+                p +=`- Nếu các câu hỏi có dạng câu trắc nghiệm bốn lựa chọn (A,B,C,D) hoặc có dạng câu trắc nghiệm đúng/sai (a,b,c,d)  theo cấu trúc đề 2025 của bộ giáo dục thì các lựa chọn phải được để cùng một mặt thẻ, bên dưới nội dung câu hỏi. Riêng câu trắc nghiệm đúng/sai thì bổ sung thêm cụm từ "(ĐÚNG/SAI)" vào cuối mỗi lựa chọn.\n`
+                // MỆNH LỆNH TỔNG HỢP CHO AI GỢI Ý - PHIÊN BẢN CHỐNG LỖI HIỂN THỊ CÔNG THỨC & ĐỊNH DẠNG
+               // 1. CHỈ THỊ CÔNG THỨC (FIX TRIỆT ĐỂ LỖI extJ)
+                p += `- CÔNG THỨC: Sử dụng ký hiệu $...$. BẮT BUỘC viết dấu gạch chéo ngược kép (\\\\) trước các lệnh LaTeX.\n`;
+                p += `  Ví dụ đúng: "$10\\\\text{ J}$", "$180^\\\\circ$", "$\\\\alpha \\\\le 90^\\\\circ$".\n`;
+                // 2. ĐỊNH DẠNG ĐỀ 2025 & TRẮC NGHIỆM (FIX LỖI THẲNG HÀNG)
+                p += `- TRÌNH BÀY: Dùng Flexbox cho đáp án. Cột ký hiệu (A,B,C,D hoặc a,b,c,d) rộng đúng 30px, flex-shrink: 0.\n`;
+                p += `  Nội dung văn bản bên phải phải THẲNG HÀNG DỌC, không được tràn xuống dưới ký hiệu.\n`;
+                // 3. CẤU TRÚC MẢNG DỮ LIỆU (QUAN TRỌNG)
+                p += `- KỸ THUẬT: Xuất dữ liệu dưới dạng mảng đối tượng JS. Sử dụng dấu nháy đơn ' ' hoặc nháy kép " " để bao quanh chuỗi, KHÔNG dùng String.raw nếu bạn không kiểm soát được dấu gạch chéo.\n`;
+                p += `- CHỈ THỊ CẤM: Tuyệt đối không thêm các ký hiệu trích dẫn như [1], [2] vào bài.\n`;
+                p += `- Chú ý tuân thủ nghiêm ngặt [YÊU CẦU KỸ THUẬT BẮT BUỘC - CHỐNG NGƯỢC CHỮ & CÔNG THỨC] đã nêu ở đầu prompt.\n`;
             }
 
             document.getElementById('prompt-display').innerText = p;
@@ -270,4 +282,5 @@ function getVal(id) {
 </script>
 </body>
 </html>
+
 
