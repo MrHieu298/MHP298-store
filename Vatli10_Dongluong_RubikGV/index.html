@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phiếu Đánh Giá Lớp Học - Dành Cho Giáo Viên</title>
+    <!-- Thư viện Xuất Excel -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            --primary: #2563EB;
+            --primary-dark: #1D4ED8;
+            --bg-gradient: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%);
+            --card-bg: rgba(255, 255, 255, 0.98);
+            --border-color: #CBD5E1;
+            --text-dark: #0F172A;
+            --text-muted: #475569;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-dark);
+            min-height: 100vh;
+            padding: 20px 10px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            color: var(--primary);
+            font-size: 1.8rem;
+            text-transform: uppercase;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-top: 4px;
+        }
+
+        /* Form Inputs */
+        .info-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+            background: #F8FAFC;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .input-group label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .input-group label span {
+            color: #EF4444;
+        }
+
+        .input-group input {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            outline: none;
+            font-size: 0.95rem;
+        }
+
+        /* Table Matrix */
+        .table-responsive {
+            overflow-x: auto;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        table.matrix-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #FFFFFF;
+            font-size: 0.85rem;
+        }
+
+        table.matrix-table th, table.matrix-table td {
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        table.matrix-table th {
+            background-color: #EFF6FF;
+            color: var(--primary-dark);
+            font-weight: 700;
+        }
+
+        .sub-header {
+            font-size: 0.75rem;
+            font-weight: 600;
+            background-color: #F1F5F9;
+        }
+
+        .sub-header.tot { color: #D97706; }
+        .sub-header.dat { color: #16A34A; }
+        .sub-header.chuadat { color: #DC2626; }
+
+        .cat-cell {
+            font-weight: 700;
+            background-color: #F8FAFC;
+            text-align: left !important;
+            white-space: nowrap;
+        }
+
+        .desc-cell {
+            text-align: left !important;
+            min-width: 180px;
+        }
+
+        /* Custom Radio Style */
+        .matrix-table input[type="radio"] {
+            cursor: pointer;
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Controls Area */
+        .remark-group {
+            margin-bottom: 15px;
+        }
+
+        .remark-group label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .remark-group textarea {
+            width: 100%;
+            height: 60px;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            resize: vertical;
+            outline: none;
+        }
+
+        .action-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #F1F5F9;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .counter-badge {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .counter-badge span {
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .btn {
+            border: none;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-save { background: var(--primary); color: white; }
+        .btn-save:hover { background: var(--primary-dark); }
+        .btn-export { background: #16A34A; color: white; }
+        .btn-export:hover { background: #15803D; }
+
+        /* Summary Section */
+        .summary-section {
+            border-top: 2px dashed var(--border-color);
+            padding-top: 20px;
+        }
+
+        .summary-section h2 {
+            font-size: 1.2rem;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+        }
+
+        .empty-msg {
+            color: var(--text-muted);
+            font-style: italic;
+            font-size: 0.9rem;
+            text-align: center;
+            padding: 20px;
+            background: #F8FAFC;
+            border-radius: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .info-section { grid-template-columns: 1fr; }
+            .action-bar { flex-direction: column; gap: 10px; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>Đánh Giá Lớp Học</h1>
+        <p>Quan sát và chấm điểm độc lập cho các Tổ và Cá nhân</p>
+    </div>
+
+    <!-- Thông tin Lớp & Học sinh -->
+    <div class="info-section">
+        <div class="input-group">
+            <label for="classInput">Lớp đang đánh giá <span>*</span></label>
+            <input type="text" id="classInput" placeholder="Ví dụ: 10A1...">
+        </div>
+        <div class="input-group">
+            <label for="studentInput">Họ và tên cá nhân (Để ghi chú cho cột "Cá nhân HS")</label>
+            <input type="text" id="studentInput" placeholder="Nhập tên học sinh nếu cần ghi chú lẻ...">
+        </div>
+    </div>
+
+    <!-- Ma Trận Chấm Điểm -->
+    <div class="table-responsive">
+        <table class="matrix-table">
+            <thead>
+                <tr>
+                    <th rowspan="2">Nội dung</th>
+                    <th rowspan="2">Tiêu chí đánh giá</th>
+                    <th colspan="3">Tổ 1</th>
+                    <th colspan="3">Tổ 2</th>
+                    <th colspan="3">Tổ 3</th>
+                    <th colspan="3">Tổ 4</th>
+                    <th colspan="3">Cá nhân HS</th>
+                </tr>
+                <tr>
+                    <th class="sub-header tot">Tốt</th><th class="sub-header dat">Đạt</th><th class="sub-header chuadat">Chưa</th>
+                    <th class="sub-header tot">Tốt</th><th class="sub-header dat">Đạt</th><th class="sub-header chuadat">Chưa</th>
+                    <th class="sub-header tot">Tốt</th><th class="sub-header dat">Đạt</th><th class="sub-header chuadat">Chưa</th>
+                    <th class="sub-header tot">Tốt</th><th class="sub-header dat">Đạt</th><th class="sub-header chuadat">Chưa</th>
+                    <th class="sub-header tot">Tốt</th><th class="sub-header dat">Đạt</th><th class="sub-header chuadat">Chưa</th>
+                </tr>
+            </thead>
+            <tbody id="matrixBody">
+                <!-- Javascript sẽ tự động dựng 11 hàng tiêu chí ở đây -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Ghi chú thêm -->
+    <div class="remark-group">
+        <label for="remarkInput">Nhận xét thêm (Cho bảng kết quả này):</label>
+        <textarea id="remarkInput" placeholder="Nhập nhận xét chung hoặc lưu ý đối với buổi học/cá nhân..."></textarea>
+    </div>
+
+    <!-- Thanh Hành Động & Đếm -->
+    <div class="action-bar">
+        <div class="counter-badge">
+            Đã tick chọn: <span id="checkedCount">0</span> / <span>55</span> ô
+        </div>
+        <button type="button" class="btn btn-save" onclick="saveRecord()">
+            💾 LƯU KẾT QUẢ VÀO BẢNG TỔNG HỢP
+        </button>
+    </div>
+
+    <!-- Danh Sách Bảng Đánh Giá Đã Lưu -->
+    <div class="summary-section">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <h2>📋 Danh Sách Bảng Đánh Giá Đã Lưu</h2>
+            <button type="button" class="btn btn-export" onclick="exportToExcel()">
+                📊 Tải Về Toàn Bộ (Excel Chuẩn)
+            </button>
+        </div>
+
+        <div id="savedContainer">
+            <div class="empty-msg">Hãy chấm điểm trên bảng Matrix và bấm Lưu để xuất hiện kết quả tổng hợp tại đây.</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 11 Tiêu chí cấu hình
+    const criteriaData = [
+        { cat: "Phiếu học tập", desc: "Mức độ hoàn thành đầy đủ các câu hỏi", rowspan: 1 },
+        { cat: "Khởi động", desc: "Khả năng nắm bắt và giải thích hiện tượng (bóng bay, giật giấy)", rowspan: 1 },
+        { cat: "Thí nghiệm 1", desc: "Kỹ năng thực hành (đủ 3 lần)", rowspan: 2 },
+        { cat: "Thí nghiệm 1", desc: "Chất lượng câu trả lời cho các câu hỏi tương tác", rowspan: 0 },
+        { cat: "Thí nghiệm 2", desc: "Kỹ năng thực hiện và quan sát hiện tượng", rowspan: 2 },
+        { cat: "Thí nghiệm 2", desc: "Mức độ giải quyết câu hỏi mở đầu & câu hỏi bí ẩn", rowspan: 0 },
+        { cat: "Tương tác Gemini", desc: "Kỹ năng sử dụng prompt hiệu quả", rowspan: 2 },
+        { cat: "Tương tác Gemini", desc: "Khả năng tư duy tạo câu hỏi/bài toán mới", rowspan: 0 },
+        { cat: "Hoạt động nhóm", desc: "Ý thức và hiệu quả hoạt động nhóm", rowspan: 1 },
+        { cat: "Bài kiểm tra", desc: "Thái độ làm bài (Nghiêm túc, trung thực)", rowspan: 2 },
+        { cat: "Bài kiểm tra", desc: "Kết quả", rowspan: 0 }
+    ];
+
+    const targets = ["Tổ 1", "Tổ 2", "Tổ 3", "Tổ 4", "Cá nhân HS"];
+    let savedRecords = [];
+
+    // Render Bảng Ma Trận
+    function renderMatrix() {
+        const tbody = document.getElementById('matrixBody');
+        tbody.innerHTML = '';
+
+        criteriaData.forEach((item, index) => {
+            const tr = document.createElement('tr');
+            
+            // Render Cột Nội Dung (có merge cell rowspan)
+            if (item.rowspan > 0) {
+                const tdCat = document.createElement('td');
+                tdCat.className = 'cat-cell';
+                tdCat.innerText = item.cat;
+                tdCat.rowSpan = item.rowspan;
+                tr.appendChild(tdCat);
+            }
+
+            // Render Cột Tiêu chí
+            const tdDesc = document.createElement('td');
+            tdDesc.className = 'desc-cell';
+            tdDesc.innerText = item.desc;
+            tr.appendChild(tdDesc);
+
+            // Render 5 đối tượng x 3 mức độ = 15 radio cho mỗi hàng
+            targets.forEach((target, tIdx) => {
+                ["tot", "dat", "chuadat"].forEach((level) => {
+                    const td = document.createElement('td');
+                    const radio = document.createElement('input');
+                    radio.type = 'radio';
+                    radio.name = `crit_${index}_target_${tIdx}`;
+                    radio.value = level;
+                    radio.onchange = updateCounter;
+                    td.appendChild(radio);
+                    tr.appendChild(td);
+                });
+            });
+
+            tbody.appendChild(tr);
+        });
+    }
+
+    // Cập nhật bộ đếm đã tick
+    function updateCounter() {
+        const checked = document.querySelectorAll('#matrixBody input[type="radio"]:checked').length;
+        document.getElementById('checkedCount').innerText = checked;
+    }
+
+    // Lưu phiên đánh giá
+    function saveRecord() {
+        const className = document.getElementById('classInput').value.trim();
+        const studentName = document.getElementById('studentInput').value.trim();
+        const remark = document.getElementById('remarkInput').value.trim();
+        const checkedCount = document.querySelectorAll('#matrixBody input[type="radio"]:checked').length;
+
+        if (!className) {
+            alert('Vui lòng nhập Lớp đang đánh giá!');
+            return;
+        }
+
+        if (checkedCount < 55) {
+            if (!confirm(`Bạn chưa chấm đủ 55 ô (Mới chấm: ${checkedCount}/55). Bạn vẫn muốn lưu?`)) {
+                return;
+            }
+        }
+
+        // Thu thập kết quả
+        const recordMatrix = [];
+        criteriaData.forEach((item, cIdx) => {
+            const rowData = { cat: item.cat, desc: item.desc, scores: {} };
+            targets.forEach((target, tIdx) => {
+                const selected = document.querySelector(`input[name="crit_${cIdx}_target_${tIdx}"]:checked`);
+                rowData.scores[target] = selected ? (selected.value === 'tot' ? 'Tốt' : selected.value === 'dat' ? 'Đạt' : 'Chưa đạt') : '-';
+            });
+            recordMatrix.push(rowData);
+        });
+
+        const record = {
+            id: Date.now(),
+            time: new Date().toLocaleString('vi-VN'),
+            className,
+            studentName: studentName || 'Không ghi chú',
+            remark: remark || 'Không có',
+            checkedCount,
+            matrix: recordMatrix
+        };
+
+        savedRecords.unshift(record);
+        renderSavedRecords();
+        resetForm();
+        alert('Đã lưu bảng đánh giá thành công!');
+    }
+
+    // Reset Form sau khi lưu
+    function resetForm() {
+        document.querySelectorAll('#matrixBody input[type="radio"]').forEach(r => r.checked = false);
+        document.getElementById('remarkInput').value = '';
+        updateCounter();
+    }
+
+    // Hiển thị các bảng đã lưu
+    function renderSavedRecords() {
+        const container = document.getElementById('savedContainer');
+        if (savedRecords.length === 0) {
+            container.innerHTML = '<div class="empty-msg">Hãy chấm điểm trên bảng Matrix và bấm Lưu để xuất hiện kết quả tổng hợp tại đây.</div>';
+            return;
+        }
+
+        let html = '';
+        savedRecords.forEach((rec, idx) => {
+            html += `
+                <div style="background: #FFF; border: 1px solid var(--border-color); border-radius: 8px; padding: 15px; margin-bottom: 15px;">
+                    <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #E2E8F0; padding-bottom: 8px; margin-bottom: 10px;">
+                        <div>
+                            <strong style="color: var(--primary);">#${savedRecords.length - idx} - Lớp: ${rec.className}</strong> 
+                            ${rec.studentName !== 'Không ghi chú' ? `| <span style="color:#059669;">Cá nhân: ${rec.studentName}</span>` : ''}
+                        </div>
+                        <div style="font-size:0.8rem; color: var(--text-muted);">🕒 ${rec.time} (Tick: ${rec.checkedCount}/55)</div>
+                    </div>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;"><strong>Ghi chú:</strong> ${rec.remark}</p>
+                    <details>
+                        <summary style="font-size:0.85rem; cursor:pointer; color:var(--primary); font-weight:600;">Xem chi tiết bảng chấm</summary>
+                        <div class="table-responsive" style="margin-top: 10px;">
+                            <table class="matrix-table" style="font-size:0.8rem;">
+                                <thead>
+                                    <tr>
+                                        <th>Tiêu chí</th>
+                                        ${targets.map(t => `<th>${t}</th>`).join('')}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${rec.matrix.map(row => `
+                                        <tr>
+                                            <td style="text-align:left;"><strong>${row.cat}</strong>: ${row.desc}</td>
+                                            ${targets.map(t => `<td>${row.scores[t]}</td>`).join('')}
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </details>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+    }
+
+    // Xuất dữ liệu ra file Excel
+    function exportToExcel() {
+        if (savedRecords.length === 0) {
+            alert('Chưa có bảng đánh giá nào được lưu để xuất Excel!');
+            return;
+        }
+
+        const exportData = [];
+        savedRecords.forEach((rec) => {
+            rec.matrix.forEach((row) => {
+                exportData.push({
+                    "Thời Gian Lưu": rec.time,
+                    "Lớp": rec.className,
+                    "Ghi Chú Cá Nhân HS": rec.studentName,
+                    "Nội Dung": row.cat,
+                    "Tiêu Chí": row.desc,
+                    "Tổ 1": row.scores["Tổ 1"],
+                    "Tổ 2": row.scores["Tổ 2"],
+                    "Tổ 3": row.scores["Tổ 3"],
+                    "Tổ 4": row.scores["Tổ 4"],
+                    "Cá Nhân HS": row.scores["Cá nhân HS"],
+                    "Nhận Xét Chung": rec.remark
+                });
+            });
+        });
+
+        const worksheet = XLSX.utils.json_to_sheet(exportData);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "TongHopDanhGia");
+        XLSX.writeFile(workbook, `Danh_Sach_Danh_Gia_Lop_Hoc_${Date.now()}.xlsx`);
+    }
+
+    // Khởi tạo giao diện ban đầu
+    window.onload = renderMatrix;
+</script>
+
+</body>
+</html>
