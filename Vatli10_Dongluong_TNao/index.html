@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thí nghiệm Động lượng - Va chạm</title>
+    <style>
+        :root {
+            --primary: #0284C7;
+            --primary-dark: #0369A1;
+            --bg-color: #E0F2FE;
+            --card-bg: #FFFFFF;
+            --border: #BAE6FD;
+            --text-dark: #0F172A;
+            --accent-pink: #F43F5E;
+            --accent-cyan: #06B6D4;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: linear-gradient(135deg, #E0F2FE 0%, #F0F9FF 100%);
+            color: var(--text-dark);
+            padding: 6px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1180px;
+            height: calc(100vh - 12px);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 10px 14px;
+            box-shadow: 0 10px 25px rgba(2, 132, 199, 0.12);
+            border: 2px solid #38BDF8;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .header {
+            text-align: center;
+        }
+
+        .header h1 {
+            background: linear-gradient(90deg, #0284C7, #0D9488);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 1.15rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .exp-layout {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 12px;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            height: 100%;
+            min-height: 0;
+        }
+
+        .canvas-area {
+            position: relative;
+            background: linear-gradient(180deg, #FFFFFF 0%, #F0FDFA 100%);
+            border-radius: 10px;
+            padding: 3px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex: 1;
+            min-height: 0;
+            box-shadow: inset 0 0 12px rgba(56, 189, 248, 0.15), 0 4px 12px rgba(0, 0, 0, 0.05);
+            border: 2px solid #7DD3FC;
+        }
+
+        canvas {
+            background: #F8FAFC;
+            border-radius: 8px;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .btn-canvas-pause {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #FFFFFF;
+            border: 2px solid #0284C7;
+            color: #0284C7;
+            font-size: 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 10px rgba(2, 132, 199, 0.25);
+            z-index: 10;
+        }
+
+        .btn-canvas-pause:hover {
+            background: #0284C7;
+            color: #FFFFFF;
+            transform: scale(1.12);
+        }
+
+        .control-panel {
+            background: #F0F9FF;
+            border: 1.5px solid #BAE6FD;
+            padding: 8px 10px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .panel-title {
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: #0369A1;
+            border-bottom: 2px solid #7DD3FC;
+            padding-bottom: 2px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .params-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px 10px;
+        }
+
+        .param-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+        }
+
+        .param-group.full-width {
+            grid-column: span 2;
+        }
+
+        .param-group label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #1E293B;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .param-group input[type="range"] {
+            width: 100%;
+            accent-color: #0284C7;
+            cursor: pointer;
+            height: 14px;
+        }
+
+        .param-group select {
+            padding: 2px 6px;
+            border-radius: 6px;
+            border: 1.5px solid #7DD3FC;
+            font-weight: 700;
+            font-size: 0.75rem;
+            color: #0369A1;
+            background: #FFFFFF;
+            outline: none;
+            height: 26px;
+            cursor: pointer;
+        }
+
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+        }
+
+        .btn {
+            border: none;
+            padding: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-run { 
+            background: linear-gradient(135deg, #10B981, #059669); 
+            color: white; 
+        }
+        .btn-run:hover { 
+            background: linear-gradient(135deg, #059669, #047857);
+            transform: translateY(-1px);
+        }
+
+        .btn-reset { 
+            background: linear-gradient(135deg, #F1F5F9, #E2E8F0); 
+            color: #475569; 
+            border: 1px solid #CBD5E1;
+        }
+        .btn-reset:hover { background: #CBD5E1; }
+
+        .btn-toggle {
+            background: #FFFFFF;
+            color: #0369A1;
+            border: 1.5px solid #7DD3FC;
+        }
+
+        .btn-toggle.active {
+            background: #0284C7;
+            color: white;
+            border-color: #0369A1;
+        }
+
+        .results-panel {
+            background: #F0F9FF;
+            border: 1.5px solid #BAE6FD;
+            padding: 8px 10px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            height: 100%;
+        }
+
+        .results-card {
+            background: #FFFFFF;
+            border: 1.5px solid #BEE3F8;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            flex: 1;
+            justify-content: space-around;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+        }
+
+        .results-card div {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px dashed #E2E8F0;
+            padding-bottom: 1px;
+        }
+
+        .results-card div:last-child { border-bottom: none; }
+        .results-card strong { color: #0284C7; font-weight: 800; }
+
+        .sub-header {
+            font-weight: 800;
+            color: #0369A1;
+            background: #E0F2FE;
+            padding: 2px 5px;
+            border-radius: 4px;
+            margin-top: 2px;
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>🧪 THÍ NGHIỆM ĐỘNG LƯỢNG - VA CHẠM</h1>
+    </div>
+
+    <div class="exp-layout">
+        <!-- Cột Bên Trái -->
+        <div class="left-column">
+            <div class="canvas-area">
+                <canvas id="simCanvas" width="720" height="340"></canvas>
+                <button id="btnPauseCanvas" class="btn-canvas-pause" onclick="togglePause()" title="Tạm dừng / Tiếp tục">⏸</button>
+            </div>
+
+            <div class="control-panel">
+                <div class="panel-title">⚙️ Thông Số & Điều Khiển Hiển Thị</div>
+
+                <div class="params-grid">
+                    <div class="param-group full-width">
+                        <label>Loại va chạm:</label>
+                        <select id="collisionType" onchange="onInputChange()">
+                            <option value="soft">Va chạm mềm (Dính vào nhau)</option>
+                            <option value="elastic">Va chạm đàn hồi (Nảy tách rời)</option>
+                        </select>
+                    </div>
+
+                    <div class="param-group">
+                        <label>Khối lượng m₁: <span id="lblM1">0.5 kg</span></label>
+                        <input type="range" id="inputM1" min="0.1" max="2.0" step="0.1" value="0.5" oninput="onInputChange()">
+                    </div>
+
+                    <div class="param-group">
+                        <label>Khối lượng m₂: <span id="lblM2">0.5 kg</span></label>
+                        <input type="range" id="inputM2" min="0.1" max="2.0" step="0.1" value="0.5" oninput="onInputChange()">
+                    </div>
+
+                    <div class="param-group">
+                        <label>Góc nghiêng &alpha;: <span id="lblAngle">30°</span></label>
+                        <input type="range" id="inputAngle" min="15" max="45" step="1" value="30" oninput="onInputChange()">
+                    </div>
+
+                    <div class="param-group">
+                        <label>Chiều dài dốc l: <span id="lblLength">2.0 m</span></label>
+                        <input type="range" id="inputLength" min="1.0" max="3.0" step="0.1" value="2.0" oninput="onInputChange()">
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button id="btnAxis" class="btn btn-toggle" onclick="toggleAxis()">➡️ CHIỀU DƯƠNG (+)</button>
+                    <button id="btnVector" class="btn btn-toggle" onclick="toggleVector()">🏹 VECTOR VẬN TỐC</button>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-run" onclick="runSimulation()">🚀 THẢ VẬT</button>
+                    <button class="btn btn-reset" onclick="resetSim()">🔄 ĐẶT LẠI</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cột Bên Phải -->
+        <div class="results-panel">
+            <div class="panel-title">📊 Bảng Kết Quả Chi Tiết</div>
+            <div class="results-card">
+                <div>
+                    <span>Vận tốc m₁ tại chân dốc B (v₁B):</span>
+                    <strong id="resV1_foot">--</strong>
+                </div>
+
+                <div class="sub-header">TRƯỚC VA CHẠM</div>
+                <div>
+                    <span>Vận tốc m₁ trước va chạm (v₁):</span>
+                    <strong id="resV1_pre">--</strong>
+                </div>
+                <div>
+                    <span>Vận tốc m₂ trước va chạm (v₂):</span>
+                    <strong id="resV2_pre">--</strong>
+                </div>
+                <div>
+                    <span>Động lượng p₁ = m₁.v₁:</span>
+                    <strong id="resP1_pre">--</strong>
+                </div>
+                <div>
+                    <span>Động lượng p₂ = m₂.v₂:</span>
+                    <strong id="resP2_pre">--</strong>
+                </div>
+                <div>
+                    <span>Tổng động lượng hệ trước va chạm (p):</span>
+                    <strong id="resP_total_pre">--</strong>
+                </div>
+
+                <div class="sub-header">SAU VA CHẠM</div>
+                <div>
+                    <span>Vận tốc m₁ sau va chạm (v'₁):</span>
+                    <strong id="resV1_after">--</strong>
+                </div>
+                <div>
+                    <span>Vận tốc m₂ sau va chạm (v'₂):</span>
+                    <strong id="resV2_after">--</strong>
+                </div>
+                <div>
+                    <span>Động lượng p'₁ = m₁.v'₁:</span>
+                    <strong id="resP1_after">--</strong>
+                </div>
+                <div>
+                    <span>Động lượng p'₂ = m₂.v'₂:</span>
+                    <strong id="resP2_after">--</strong>
+                </div>
+                <div>
+                    <span>Tổng động lượng hệ sau va chạm (p'):</span>
+                    <strong id="resP_total_after">--</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const canvas = document.getElementById('simCanvas');
+    const ctx = canvas.getContext('2d');
+    const g = 9.81;
+
+    let animId = null;
+    let isRunning = false;
+    let isPaused = false;
+
+    // Biến trạng thái hiển thị
+    let showAxis = false;
+    let showVector = false;
+
+    // Thông số ban đầu
+    let m1 = 0.5, m2 = 0.5;
+    let alphaDeg = 30, lengthL = 2.0;
+    let collisionType = 'soft';
+
+    // Tọa độ & Tỉ lệ Canvas
+    const groundY = 270;
+    const footX = 220; 
+    const scale = 80;  
+
+    // Phase: 
+    // 0: Chưa thả
+    // 1: Đang trượt trên dốc (A -> B)
+    // 2: Đã qua B, di chuyển đến m2 (Trước va chạm)
+    // 3: Sau khi va chạm
+    let currentPhase = 0; 
+    let dRamp = 0;
+    let posX1 = 0, posX2 = 0;
+    let velX1 = 0, velX2 = 0;
+    let currentV1 = 0, currentV2 = 0;
+    let rampTime = 0;
+
+    function toggleAxis() {
+        showAxis = !showAxis;
+        document.getElementById('btnAxis').classList.toggle('active', showAxis);
+        draw();
+    }
+
+    function toggleVector() {
+        showVector = !showVector;
+        document.getElementById('btnVector').classList.toggle('active', showVector);
+        draw();
+    }
+
+    function togglePause() {
+        if (!isRunning) return;
+        
+        isPaused = !isPaused;
+        const btn = document.getElementById('btnPauseCanvas');
+        
+        if (isPaused) {
+            btn.innerText = "▶";
+            btn.style.borderColor = "#F43F5E";
+            btn.style.color = "#F43F5E";
+            if (animId) cancelAnimationFrame(animId);
+        } else {
+            btn.innerText = "⏸";
+            btn.style.borderColor = "#0284C7";
+            btn.style.color = "#0284C7";
+            animate();
+        }
+    }
+
+    function resetPauseBtn() {
+        const btn = document.getElementById('btnPauseCanvas');
+        btn.innerText = "⏸";
+        btn.style.borderColor = "#0284C7";
+        btn.style.color = "#0284C7";
+    }
+
+    function onInputChange() {
+        if (animId) cancelAnimationFrame(animId);
+        isRunning = false;
+        isPaused = false;
+        resetPauseBtn();
+        updateParams();
+    }
+
+    function updateParams() {
+        m1 = parseFloat(document.getElementById('inputM1').value);
+        m2 = parseFloat(document.getElementById('inputM2').value);
+        alphaDeg = parseFloat(document.getElementById('inputAngle').value);
+        lengthL = parseFloat(document.getElementById('inputLength').value);
+        collisionType = document.getElementById('collisionType').value;
+
+        document.getElementById('lblM1').innerText = m1.toFixed(1) + " kg";
+        document.getElementById('lblM2').innerText = m2.toFixed(1) + " kg";
+        document.getElementById('lblAngle').innerText = alphaDeg + "°";
+        document.getElementById('lblLength').innerText = lengthL.toFixed(1) + " m";
+
+        clearDisplayResults();
+        resetPositions();
+        draw();
+    }
+
+    function clearDisplayResults() {
+        document.getElementById('resV1_foot').innerText = "--";
+        document.getElementById('resV1_pre').innerText = "--";
+        document.getElementById('resV2_pre').innerText = "--";
+        document.getElementById('resP1_pre').innerText = "--";
+        document.getElementById('resP2_pre').innerText = "--";
+        document.getElementById('resP_total_pre').innerText = "--";
+
+        document.getElementById('resV1_after').innerText = "--";
+        document.getElementById('resV2_after').innerText = "--";
+        document.getElementById('resP1_after').innerText = "--";
+        document.getElementById('resP2_after').innerText = "--";
+        document.getElementById('resP_total_after').innerText = "--";
+    }
+
+    function updatePreCollisionResults(v1_foot) {
+        const v1_pre = v1_foot;
+        const v2_pre = 0;
+        const p1_pre = m1 * v1_pre;
+        const p2_pre = 0;
+        const p_total_pre = p1_pre + p2_pre;
+
+        document.getElementById('resV1_foot').innerText = v1_foot.toFixed(2) + " m/s";
+        document.getElementById('resV1_pre').innerText = v1_pre.toFixed(2) + " m/s";
+        document.getElementById('resV2_pre').innerText = v2_pre.toFixed(2) + " m/s";
+        document.getElementById('resP1_pre').innerText = p1_pre.toFixed(2) + " kg·m/s";
+        document.getElementById('resP2_pre').innerText = p2_pre.toFixed(2) + " kg·m/s";
+        document.getElementById('resP_total_pre').innerText = p_total_pre.toFixed(2) + " kg·m/s";
+    }
+
+    function updatePostCollisionResults(v1_pre) {
+        let v1_after = 0, v2_after = 0;
+
+        if (collisionType === 'soft') {
+            v1_after = (m1 * v1_pre) / (m1 + m2);
+            v2_after = v1_after;
+        } else {
+            v1_after = ((m1 - m2) * v1_pre) / (m1 + m2);
+            v2_after = (2 * m1 * v1_pre) / (m1 + m2);
+        }
+
+        const p1_after = m1 * v1_after;
+        const p2_after = m2 * v2_after;
+        const p_total_after = p1_after + p2_after;
+
+        document.getElementById('resV1_after').innerText = v1_after.toFixed(2) + " m/s";
+        document.getElementById('resV2_after').innerText = v2_after.toFixed(2) + " m/s";
+        document.getElementById('resP1_after').innerText = p1_after.toFixed(2) + " kg·m/s";
+        document.getElementById('resP2_after').innerText = p2_after.toFixed(2) + " kg·m/s";
+        document.getElementById('resP_total_after').innerText = p_total_after.toFixed(2) + " kg·m/s";
+
+        return { v1_after, v2_after };
+    }
+
+    function resetPositions() {
+        posX2 = footX + 2.0 * scale; 
+        posX1 = footX;
+        dRamp = 0;
+        rampTime = 0;
+        currentPhase = 0;
+        currentV1 = 0;
+        currentV2 = 0;
+    }
+
+    function resetSim() {
+        if (animId) cancelAnimationFrame(animId);
+        isRunning = false;
+        isPaused = false;
+        resetPauseBtn();
+        updateParams();
+    }
+
+    function drawArrowWithMathLabel(fromx, fromy, tox, toy, color, baseSymbol, subSymbol = '') {
+        const headlen = 8;
+        const dx = tox - fromx;
+        const dy = toy - fromy;
+        const angle = Math.atan2(dy, dx);
+
+        ctx.strokeStyle = color;
+        ctx.fillStyle = color;
+        ctx.lineWidth = 2.5;
+
+        ctx.beginPath();
+        ctx.moveTo(fromx, fromy);
+        ctx.lineTo(tox, toy);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(tox, toy);
+        ctx.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
+        ctx.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
+        ctx.closePath();
+        ctx.fill();
+
+        if (baseSymbol) {
+            const lx = tox + 6;
+            const ly = toy - 6;
+
+            ctx.font = 'italic bold 13px serif';
+            ctx.fillText(baseSymbol, lx, ly);
+
+            const arrowY = ly - 12;
+            ctx.beginPath();
+            ctx.moveTo(lx, arrowY);
+            ctx.lineTo(lx + 10, arrowY);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(lx + 10, arrowY);
+            ctx.lineTo(lx + 7, arrowY - 2.5);
+            ctx.lineTo(lx + 7, arrowY + 2.5);
+            ctx.closePath();
+            ctx.fill();
+
+            if (subSymbol) {
+                ctx.font = 'bold 10px sans-serif';
+                ctx.fillText(subSymbol, lx + 9, ly + 3);
+            }
+        }
+    }
+
+    function drawGrid() {
+        ctx.strokeStyle = '#E2E8F0';
+        ctx.lineWidth = 0.8;
+        const gridSize = 20;
+
+        for (let x = 0; x < canvas.width; x += gridSize) {
+            ctx.beginPath();
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, canvas.height);
+            ctx.stroke();
+        }
+        for (let y = 0; y < canvas.height; y += gridSize) {
+            ctx.beginPath();
+            ctx.moveTo(0, y);
+            ctx.lineTo(canvas.width, y);
+            ctx.stroke();
+        }
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        drawGrid();
+
+        const rad = alphaDeg * Math.PI / 180;
+        const rampPx = lengthL * scale;
+
+        const topX = footX - rampPx * Math.cos(rad);
+        const topY = groundY - rampPx * Math.sin(rad);
+
+        const rampGrad = ctx.createLinearGradient(topX, topY, footX, groundY);
+        rampGrad.addColorStop(0, '#E0F2FE');
+        rampGrad.addColorStop(1, '#BAE6FD');
+
+        ctx.fillStyle = rampGrad;
+        ctx.beginPath();
+        ctx.moveTo(footX, groundY);
+        ctx.lineTo(topX, topY);
+        ctx.lineTo(topX, groundY);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.strokeStyle = '#0284C7';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(topX, topY);
+        ctx.lineTo(footX, groundY);
+        ctx.stroke();
+
+        ctx.strokeStyle = '#0369A1';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(10, groundY);
+        ctx.lineTo(canvas.width - 10, groundY);
+        ctx.stroke();
+
+        ctx.fillStyle = '#0369A1';
+        ctx.font = 'bold 14px sans-serif';
+
+        const labelOffset = 22; 
+        const labelAX = topX - labelOffset * Math.cos(rad);
+        const labelAY = topY - labelOffset * Math.sin(rad);
+        ctx.fillText("A", labelAX - 8, labelAY - 2);
+
+        ctx.fillText("B", footX + 4, groundY + 18);
+        ctx.fillText("C", canvas.width - 25, groundY + 18);
+
+        if (showAxis) {
+            const axisY = groundY + 42;
+            ctx.strokeStyle = '#0284C7';
+            ctx.fillStyle = '#0284C7';
+            ctx.lineWidth = 2.5;
+
+            ctx.beginPath();
+            ctx.moveTo(footX - 30, axisY);
+            ctx.lineTo(canvas.width - 30, axisY);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(canvas.width - 30, axisY);
+            ctx.lineTo(canvas.width - 38, axisY - 4);
+            ctx.lineTo(canvas.width - 38, axisY + 4);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.font = 'bold 12px sans-serif';
+            ctx.fillText("(+) Ox", canvas.width - 25, axisY + 4);
+        }
+
+        const r1 = 9 + m1 * 4;
+        let ball1X, ball1Y;
+
+        if (currentPhase === 0) {
+            ball1X = topX + r1 * Math.sin(rad);
+            ball1Y = topY - r1 * Math.cos(rad);
+        } else if (currentPhase === 1) {
+            const currentDistPx = dRamp * scale;
+            ball1X = topX + currentDistPx * Math.cos(rad) + r1 * Math.sin(rad);
+            ball1Y = topY + currentDistPx * Math.sin(rad) - r1 * Math.cos(rad);
+        } else {
+            ball1X = posX1;
+            ball1Y = groundY - r1;
+        }
+
+        const r2 = 9 + m2 * 4;
+        const ball2X = posX2;
+        const ball2Y = groundY - r2;
+
+        if (showVector) {
+            const vLenScale = 16; 
+
+            if (currentPhase === 1) {
+                const vx = currentV1 * Math.cos(rad) * vLenScale;
+                const vy = currentV1 * Math.sin(rad) * vLenScale;
+                if (currentV1 > 0.05) drawArrowWithMathLabel(ball1X, ball1Y, ball1X + vx, ball1Y + vy, '#D97706', 'v', '1');
+            } else if (currentPhase >= 2) {
+                const vx = currentV1 * vLenScale;
+                if (Math.abs(currentV1) > 0.02) {
+                    const subLabel = currentPhase === 2 ? '1' : "1'";
+                    drawArrowWithMathLabel(ball1X, ball1Y, ball1X + vx, ball1Y, '#D97706', 'v', subLabel);
+                }
+            }
+
+            if (currentPhase === 3 && Math.abs(currentV2) > 0.02) {
+                const vx = currentV2 * vLenScale;
+                drawArrowWithMathLabel(ball2X, ball2Y, ball2X + vx, ball2Y, '#059669', 'v', "2'");
+            }
+        }
+
+        // Vật m1
+        ctx.shadowColor = 'rgba(6, 182, 212, 0.4)';
+        ctx.shadowBlur = 8;
+        ctx.fillStyle = '#06B6D4';
+        ctx.beginPath();
+        ctx.arc(ball1X, ball1Y, r1, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#FFFFFF';
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+
+        ctx.shadowBlur = 0; 
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = 'bold 11px sans-serif';
+        ctx.fillText("m₁", ball1X - 7, ball1Y + 4);
+
+        // Vật m2
+        ctx.shadowColor = 'rgba(244, 63, 94, 0.4)';
+        ctx.shadowBlur = 8;
+        ctx.fillStyle = '#F43F5E';
+        ctx.beginPath();
+        ctx.arc(ball2X, ball2Y, r2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#FFFFFF';
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+
+        ctx.shadowBlur = 0; 
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillText("m₂", ball2X - 7, ball2Y + 4);
+    }
+
+    function runSimulation() {
+        if (isRunning) return;
+        resetSim();
+        
+        isRunning = true;
+        isPaused = false;
+
+        currentPhase = 1;
+        rampTime = 0;
+
+        animate();
+    }
+
+    function animate() {
+        if (!isRunning || isPaused) return;
+
+        const rad = alphaDeg * Math.PI / 180;
+        const accelRamp = g * Math.sin(rad);
+        const r1 = 9 + m1 * 4;
+        const r2 = 9 + m2 * 4;
+        const dt = 0.016;
+
+        if (currentPhase === 1) {
+            rampTime += dt;
+            dRamp = 0.5 * accelRamp * rampTime * rampTime;
+            currentV1 = accelRamp * rampTime;
+            
+            // Hiển thị vận tốc m1 tức thời khi đang chạy trên dốc
+            document.getElementById('resV1_foot').innerText = currentV1.toFixed(2) + " m/s";
+
+            if (dRamp >= lengthL) {
+                dRamp = lengthL;
+                currentPhase = 2;
+                posX1 = footX;
+                
+                const v1_foot = Math.sqrt(2 * g * lengthL * Math.sin(rad));
+                velX1 = v1_foot;
+                currentV1 = v1_foot;
+
+                // Chốt kết quả trước va chạm
+                updatePreCollisionResults(v1_foot);
+            }
+        } else if (currentPhase === 2) {
+            posX1 += (velX1 * scale) * dt;
+            currentV1 = velX1;
+
+            if (posX1 + r1 >= posX2 - r2) {
+                currentPhase = 3;
+                posX1 = posX2 - r1 - r2;
+                
+                // Va chạm xảy ra -> Tính toán & hiển thị kết quả SAU VA CHẠM
+                const v1_foot = Math.sqrt(2 * g * lengthL * Math.sin(rad));
+                const { v1_after, v2_after } = updatePostCollisionResults(v1_foot);
+
+                velX1 = v1_after;
+                velX2 = v2_after;
+                currentV1 = v1_after;
+                currentV2 = v2_after;
+            }
+        } else if (currentPhase === 3) {
+            posX2 += (velX2 * scale) * dt;
+
+            if (collisionType === 'soft') {
+                posX1 = posX2 - r1 - r2;
+            } else {
+                posX1 += (velX1 * scale) * dt;
+            }
+
+            if (posX2 > canvas.width + 50 || posX1 > canvas.width + 50 || posX1 < -50) {
+                isRunning = false;
+                return;
+            }
+        }
+
+        draw();
+        animId = requestAnimationFrame(animate);
+    }
+
+    updateParams();
+</script>
+
+</body>
+</html>
