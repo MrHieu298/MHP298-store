@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PHIẾU HỌC TẬP - BÀI 18: ĐỘNG LƯỢNG (PHẦN 1)</title>
+  
+  <!-- MathJax 3 Configuration -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      options: {
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <!-- html2pdf.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #0284c7;
+      --primary-dark: #0369a1;
+      --primary-light: #e0f2fe;
+      --accent: #f59e0b;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Lexend', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 20px 10px;
+    }
+
+    .paper-container {
+      max-width: 850px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      padding: 35px 40px;
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+
+    /* Header */
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px dashed var(--primary-light);
+      padding-bottom: 15px;
+      margin-bottom: 20px;
+    }
+
+    .header-bar h2 {
+      font-size: 15px;
+      color: var(--primary-dark);
+      text-transform: uppercase;
+    }
+
+    .due-date {
+      font-size: 13px;
+      color: #d97706;
+      background: #fef3c7;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-weight: 500;
+    }
+
+    .main-title {
+      text-align: center;
+      color: var(--primary-dark);
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+    }
+
+    /* Student Info Grid */
+    .student-info {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 15px;
+      background: #f0f9ff;
+      padding: 15px 20px;
+      border-radius: 12px;
+      margin-bottom: 25px;
+      border: 1px solid #bae6fd;
+    }
+
+    .input-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .input-group label {
+      font-weight: 600;
+      color: var(--primary-dark);
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    .input-group input[type="text"] {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #93c5fd;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 14px;
+      outline: none;
+      background: #fff;
+    }
+
+    /* Section Styles */
+    .section { margin-bottom: 25px; }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+
+    .section-header .num {
+      background: rgba(255, 255, 255, 0.25);
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+
+    /* Scenario Box */
+    .scenario-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 12px;
+      margin-bottom: 15px;
+    }
+
+    .scenario-card {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 15px;
+      background: #fafafa;
+      font-size: 13.5px;
+    }
+
+    .scenario-card h4 {
+      color: var(--primary-dark);
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+
+    .scenario-card ul {
+      padding-left: 18px;
+      color: var(--text-muted);
+    }
+
+    /* Input Fields */
+    .answer-box {
+      width: 100%;
+      min-height: 85px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 14px;
+      color: var(--text);
+      resize: vertical;
+      outline: none;
+      background: #fff;
+    }
+
+    .theory-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 18px;
+      font-size: 14px;
+    }
+
+    .inline-input {
+      border: none;
+      border-bottom: 2px solid var(--primary);
+      background: transparent;
+      padding: 2px 6px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--primary-dark);
+      text-align: center;
+      outline: none;
+      width: 130px;
+    }
+
+    .formula-card {
+      background: #eff6ff;
+      border-left: 4px solid var(--primary);
+      padding: 12px 16px;
+      border-radius: 6px;
+      margin: 12px 0;
+      font-size: 14.5px;
+    }
+
+    .logic-flow {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      padding: 15px;
+      border-radius: 12px;
+      font-size: 13.5px;
+      font-weight: 500;
+      color: #166534;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .logic-step {
+      background: #fff;
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid #dcfce7;
+    }
+
+    /* Multiple Choice */
+    .mcq-item {
+      background: #fff;
+      border: 1px solid var(--border);
+      padding: 14px 16px;
+      border-radius: 10px;
+      margin-bottom: 12px;
+    }
+
+    .mcq-question {
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .mcq-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .mcq-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13.5px;
+      cursor: pointer;
+    }
+
+    /* Action Toolbar */
+    .toolbar {
+      position: sticky;
+      bottom: 20px;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(8px);
+      padding: 12px 20px;
+      border-radius: 50px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 30px;
+      border: 1px solid rgba(226, 232, 240, 0.8);
+    }
+
+    .btn {
+      padding: 10px 24px;
+      border-radius: 30px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #0284c7, #0369a1);
+      color: white;
+    }
+
+    .btn-secondary { background: #f1f5f9; color: var(--text); }
+
+    /* PDF Print Rules */
+    .printable-text {
+      display: none;
+      white-space: pre-wrap;
+      font-weight: 500;
+      color: #0f172a;
+    }
+
+    body.exporting .answer-box,
+    body.exporting .inline-input,
+    body.exporting .input-group input { display: none !important; }
+
+    body.exporting .printable-text { display: block !important; }
+    body.exporting .toolbar { display: none !important; }
+    body.exporting .paper-container { box-shadow: none !important; border: none !important; padding: 0 !important; }
+  </style>
+</head>
+<body>
+
+  <div class="paper-container" id="pdf-content">
+    
+    <div class="header-bar">
+      <h2>Trường THPT ..............</h2>
+      <div class="due-date">⏳ Hạn nộp cuối: 31/03/2026</div>
+    </div>
+
+    <h1 class="main-title">PHIẾU HỌC TẬP: BÀI 18 - ĐỘNG LƯỢNG (PHẦN 1)</h1>
+
+    <div class="student-info">
+      <div class="input-group">
+        <label>Họ và tên:</label>
+        <input type="text" id="student-name" placeholder="Nhập đầy đủ họ tên...">
+        <span class="printable-text" id="print-name"></span>
+      </div>
+      <div class="input-group">
+        <label>Lớp:</label>
+        <input type="text" id="student-class" placeholder="VD: 10A1">
+        <span class="printable-text" id="print-class"></span>
+      </div>
+    </div>
+
+    <!-- Section I -->
+    <div class="section">
+      <div class="section-header">
+        <span class="num">I</span>
+        <span>KHỞI ĐỘNG TÌNH HUỐNG</span>
+      </div>
+
+      <p style="font-size: 14px; margin-bottom: 10px;">📌 Chọn 1 trong các tình huống thực tế sau để giải thích:</p>
+
+      <div class="scenario-grid">
+        <div class="scenario-card">
+          <h4>🏀 Tình huống 1: Môn Bóng rổ</h4>
+          <ul>
+            <li>Chuyền nhẹ $\rightarrow$ đồng đội dễ bắt.</li>
+            <li>Chuyền mạnh $\rightarrow$ bóng bay nhanh, dễ tuột tay.</li>
+          </ul>
+        </div>
+        <div class="scenario-card">
+          <h4>🎱 Tình huống 2: Môn Bida</h4>
+          <ul>
+            <li>Lực nhẹ $\rightarrow$ bi lăn chậm.</li>
+            <li>Chọc cơ mạnh $\rightarrow$ bi di chuyển cực nhanh.</li>
+          </ul>
+        </div>
+        <div class="scenario-card">
+          <h4>🎳 Tình huống 3: Môn Bowling</h4>
+          <ul>
+            <li>Bi bowling nặng lăn đến va chạm.</li>
+            <li>Làm xô đổ hàng loạt ki (pin) đứng yên.</li>
+          </ul>
+        </div>
+      </div>
+
+      <label style="font-size: 13.5px; font-weight: 600; color: var(--primary-dark);">✍️ Giải thích tình huống em lựa chọn:</label>
+      <textarea class="answer-box" id="ans-section1" placeholder="Nhập tên tình huống và lời giải thích dựa trên kiến thức thực tế của em..."></textarea>
+      <div class="printable-text" id="print-section1"></div>
+    </div>
+
+    <!-- Section II -->
+    <div class="section">
+      <div class="section-header">
+        <span class="num">II</span>
+        <span>LÝ THUYẾT TRỌNG TÂM</span>
+      </div>
+
+      <div class="theory-box">
+        <h4 style="color: var(--primary-dark); margin-bottom: 8px;">1. Khái niệm và Đặc điểm</h4>
+        <p style="margin-bottom: 8px;">
+          <b>a) Khái niệm:</b> Động lượng là đại lượng đặc trưng cho khả năng truyền 
+          <input type="text" class="inline-input" id="fill-1" placeholder="............"> 
+          <span class="printable-text" id="print-fill-1" style="display:inline;"></span>
+          của vật này lên vật khác thông qua 
+          <input type="text" class="inline-input" id="fill-2" placeholder="............"> 
+          <span class="printable-text" id="print-fill-2" style="display:inline;"></span> giữa chúng.
+        </p>
+
+        <div class="formula-card">
+          👉 <b>Biểu thức vectơ:</b> $\vec{p} = m \cdot \vec{v}$ &nbsp;|&nbsp; <b>Độ lớn:</b> $p = m \cdot v$<br>
+          <i>Nhận xét:</i> Khi $m$ tăng thì $p$ <input type="text" class="inline-input" id="fill-3" style="width:70px;" placeholder="......."><span class="printable-text" id="print-fill-3" style="display:inline;"></span>; khi $v$ tăng thì $p$ <input type="text" class="inline-input" id="fill-4" style="width:70px;" placeholder="......."><span class="printable-text" id="print-fill-4" style="display:inline;"></span>.
+        </div>
+
+        <p><b>b) Đặc điểm:</b></p>
+        <ul style="padding-left: 20px; color: var(--text-muted); margin-bottom: 12px;">
+          <li>Động lượng là một đại lượng <b>vectơ</b> cùng hướng với hướng của vận tốc $\vec{v}$.</li>
+          <li>Động lượng phụ thuộc vào <b>hệ quy chiếu</b> vì vận tốc phụ thuộc hệ quy chiếu.</li>
+        </ul>
+
+        <h4 style="color: var(--primary-dark); margin-bottom: 8px;">2. Độ biến thiên động lượng</h4>
+        <p>$$\Delta \vec{p} = \vec{p}_2 - \vec{p}_1 = \vec{p}_2 + (-\vec{p}_1)$$</p>
+        <p>👉 <b>Công thức độ lớn tổng quát:</b> $\Delta p = \sqrt{p_1^2 + p_2^2 - 2 p_1 p_2 \cos\alpha}$</p>
+        <p style="font-size: 13px; color: var(--text-muted); margin-top: 5px;">
+          <i>Trường hợp đặc biệt ($p_1 = p_2 = p$):</i><br>
+          • Vật bật ngược trở lại ($\alpha = 180^\circ$): $\Delta p =$ <input type="text" class="inline-input" id="fill-5" style="width:90px;" placeholder="........."><span class="printable-text" id="print-fill-5" style="display:inline;"></span><br>
+          • Hợp với hướng ban đầu góc $\alpha = 120^\circ$: $\Delta p =$ <input type="text" class="inline-input" id="fill-6" style="width:90px;" placeholder="........."><span class="printable-text" id="print-fill-6" style="display:inline;"></span>
+        </p>
+      </div>
+    </div>
+
+    <!-- Section III -->
+    <div class="section">
+      <div class="section-header">
+        <span class="num">III</span>
+        <span>LOGIC BÀI HỌC</span>
+      </div>
+
+      <div class="logic-flow">
+        <div class="logic-step">Vật khối lượng $m$</div>
+        <span>+</span>
+        <div class="logic-step">Vận tốc $\vec{v}$</div>
+        <span>➡</span>
+        <div class="logic-step">Động lượng $\vec{p} = m\cdot\vec{v}$</div>
+        <span>➡</span>
+        <div class="logic-step">Thay đổi $\Delta\vec{v} \implies \Delta\vec{p}$</div>
+      </div>
+    </div>
+
+    <!-- Section IV -->
+    <div class="section">
+      <div class="section-header">
+        <span class="num">IV</span>
+        <span>VÍ DỤ MINH HỌA (GIÁO VIÊN HƯỚNG DẪN)</span>
+      </div>
+
+      <div style="margin-bottom: 15px;">
+        <p style="font-size: 14px; font-weight: 600; color: var(--primary-dark);">🔹 Dạng 1: Tính động lượng $p$</p>
+        <p style="font-size: 13.5px; margin-bottom: 6px;">
+          <b>Ví dụ 1 (Bóng chuyền):</b> VĐV đập quả bóng chuyền khối lượng $280\text{ g}$ với tốc độ $20\text{ m/s}$ sang sân đối phương. Xác định hướng và độ lớn động lượng của bóng.
+        </p>
+        <textarea class="answer-box" id="ans-ex1" placeholder="Trình bày lời giải chi tiết..."></textarea>
+        <div class="printable-text" id="print-ex1"></div>
+      </div>
+
+      <div>
+        <p style="font-size: 14px; font-weight: 600; color: var(--primary-dark);">🔹 Dạng 2: Tính độ biến thiên động lượng $\Delta p$</p>
+        <p style="font-size: 13.5px; margin-bottom: 6px;">
+          <b>Ví dụ 2 (Bóng nảy sàn):</b> Quả bóng $100\text{ g}$ rơi thẳng đứng xuống sàn với tốc độ $8\text{ m/s}$ rồi nảy ngược thẳng đứng lên với cùng tốc độ. Tính $\Delta p$ (Chọn chiều dương hướng lên).
+        </p>
+        <textarea class="answer-box" id="ans-ex2" placeholder="Trình bày lời giải chi tiết..."></textarea>
+        <div class="printable-text" id="print-ex2"></div>
+      </div>
+    </div>
+
+    <!-- Section V -->
+    <div class="section">
+      <div class="section-header">
+        <span class="num">V</span>
+        <span>LUYỆN TẬP TỔNG HỢP</span>
+      </div>
+
+      <h4 style="color: var(--primary-dark); margin-bottom: 10px; font-size: 14.5px;">Phần 1: Trắc nghiệm nhanh</h4>
+
+      <div class="mcq-item">
+        <div class="mcq-question">Câu 1: Phát biểu nào sau đây là ĐÚNG về động lượng của một vật?</div>
+        <div class="mcq-options">
+          <label class="mcq-option"><input type="radio" name="q1" value="A"> A. Luôn cùng hướng với gia tốc</label>
+          <label class="mcq-option"><input type="radio" name="q1" value="B"> B. Luôn cùng hướng với vận tốc</label>
+          <label class="mcq-option"><input type="radio" name="q1" value="C"> C. Là đại lượng vô hướng luôn dương</label>
+          <label class="mcq-option"><input type="radio" name="q1" value="D"> D. Không phụ thuộc hệ quy chiếu</label>
+        </div>
+      </div>
+
+      <div class="mcq-item">
+        <div class="mcq-question">Câu 2: Nếu khối lượng vật tăng 3 lần và tốc độ giảm 2 lần thì độ lớn động lượng sẽ:</div>
+        <div class="mcq-options">
+          <label class="mcq-option"><input type="radio" name="q2" value="A"> A. Tăng 1,5 lần</label>
+          <label class="mcq-option"><input type="radio" name="q2" value="B"> B. Giảm 1,5 lần</label>
+          <label class="mcq-option"><input type="radio" name="q2" value="C"> C. Tăng 6 lần</label>
+          <label class="mcq-option"><input type="radio" name="q2" value="D"> D. Không đổi</label>
+        </div>
+      </div>
+
+      <div class="mcq-item">
+        <div class="mcq-question">Câu 3: Đơn vị nào sau đây KHÔNG PHẢI là đơn vị của động lượng?</div>
+        <div class="mcq-options">
+          <label class="mcq-option"><input type="radio" name="q3" value="A"> A. $\text{kg}\cdot\text{m/s}$</label>
+          <label class="mcq-option"><input type="radio" name="q3" value="B"> B. $\text{N}\cdot\text{s}$</label>
+          <label class="mcq-option"><input type="radio" name="q3" value="C"> C. $\text{J}\cdot\text{s/m}$</label>
+          <label class="mcq-option"><input type="radio" name="q3" value="D"> D. $\text{kg}\cdot\text{m/s}^2$</label>
+        </div>
+      </div>
+
+      <div class="mcq-item">
+        <div class="mcq-question">Câu 4: Một vật $500\text{ g}$ chuyển động thẳng đều với tốc độ $36\text{ km/h}$. Động lượng vật là:</div>
+        <div class="mcq-options">
+          <label class="mcq-option"><input type="radio" name="q4" value="A"> A. $18\text{ kg}\cdot\text{m/s}$</label>
+          <label class="mcq-option"><input type="radio" name="q4" value="B"> B. $5\text{ kg}\cdot\text{m/s}$</label>
+          <label class="mcq-option"><input type="radio" name="q4" value="C"> C. $18000\text{ kg}\cdot\text{m/s}$</label>
+          <label class="mcq-option"><input type="radio" name="q4" value="D"> D. $5000\text{ kg}\cdot\text{m/s}$</label>
+        </div>
+      </div>
+
+      <h4 style="color: var(--primary-dark); margin: 15px 0 10px 0; font-size: 14.5px;">Phần 2: Tự luận rèn luyện</h4>
+
+      <div style="margin-bottom: 12px;">
+        <p style="font-size: 13.5px; margin-bottom: 5px;">
+          <b>Bài 1:</b> So sánh độ lớn động lượng của viên đạn $20\text{ g}$ bay với tốc độ $400\text{ m/s}$ và người $60\text{ kg}$ chạy bộ với tốc độ $3\text{ m/s}$.
+        </p>
+        <textarea class="answer-box" id="ans-p1" placeholder="Nhập lời giải Bài 1..."></textarea>
+        <div class="printable-text" id="print-p1"></div>
+      </div>
+
+      <div style="margin-bottom: 12px;">
+        <p style="font-size: 13.5px; margin-bottom: 5px;">
+          <b>Bài 2:</b> Xe máy và người lái có tổng khối lượng $180\text{ kg}$ chuyển động thẳng với tốc độ $54\text{ km/h}$. Tính động lượng của xe.
+        </p>
+        <textarea class="answer-box" id="ans-p2" placeholder="Nhập lời giải Bài 2..."></textarea>
+        <div class="printable-text" id="print-p2"></div>
+      </div>
+
+      <div style="margin-bottom: 12px;">
+        <p style="font-size: 13.5px; margin-bottom: 5px;">
+          <b>Bài 3 (Vận dụng cao):</b> Quả bóng $m = 200\text{ g}$ bay đến đập vào tường nhẵn với $v = 10\text{ m/s}$ dưới góc tới $\alpha = 60^\circ$ so với mặt tường. Sau đó bóng bật ra với cùng tốc độ $v$ dưới góc phản xạ đối xứng. Tính độ lớn độ biến thiên động lượng $\Delta p$.
+        </p>
+        <textarea class="answer-box" id="ans-p3" placeholder="Nhập lời giải Bài 3..."></textarea>
+        <div class="printable-text" id="print-p3"></div>
+      </div>
+
+      <!-- Self Evaluation -->
+      <div style="background: #f8fafc; border: 1px solid var(--border); padding: 15px; border-radius: 10px; margin-top: 15px;">
+        <h4 style="color: var(--primary-dark); margin-bottom: 8px; font-size: 14px;">📝 TỰ ĐÁNH GIÁ CÁ NHÂN</h4>
+        <div style="display: flex; gap: 20px; margin: 8px 0;">
+          <label style="font-size: 14px;"><input type="radio" name="eval" value="Hiểu rõ"> ☐ Hiểu rõ</label>
+          <label style="font-size: 14px;"><input type="radio" name="eval" value="Hiểu một phần"> ☐ Hiểu một phần</label>
+          <label style="font-size: 14px;"><input type="radio" name="eval" value="Chưa hiểu"> ☐ Chưa hiểu</label>
+        </div>
+        <label style="font-size: 13px; font-weight: 500; color: var(--text-muted);">👉 Điều em còn thắc mắc hoặc chưa rõ:</label>
+        <textarea class="answer-box" id="ans-eval" style="height: 50px; margin-top: 5px;" placeholder="Ghi lại nội dung em chưa hiểu..."></textarea>
+        <div class="printable-text" id="print-eval"></div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Sticky Action Toolbar -->
+  <div class="toolbar">
+    <button class="btn btn-secondary" onclick="window.scrollTo({top:0, behavior:'smooth'})">⬆️ Đầu trang</button>
+    <button class="btn btn-primary" onclick="generatePDF()">📥 XUẤT FILE PDF NỘP BÀI</button>
+  </div>
+
+  <script>
+    function syncPrintableData() {
+      const inputMap = [
+        ['student-name', 'print-name'],
+        ['student-class', 'print-class'],
+        ['ans-section1', 'print-section1'],
+        ['fill-1', 'print-fill-1'],
+        ['fill-2', 'print-fill-2'],
+        ['fill-3', 'print-fill-3'],
+        ['fill-4', 'print-fill-4'],
+        ['fill-5', 'print-fill-5'],
+        ['fill-6', 'print-fill-6'],
+        ['ans-ex1', 'print-ex1'],
+        ['ans-ex2', 'print-ex2'],
+        ['ans-p1', 'print-p1'],
+        ['ans-p2', 'print-p2'],
+        ['ans-p3', 'print-p3'],
+        ['ans-eval', 'print-eval']
+      ];
+
+      inputMap.forEach(([inputId, printId]) => {
+        const inputElem = document.getElementById(inputId);
+        const printElem = document.getElementById(printId);
+        if (inputElem && printElem) {
+          printElem.textContent = inputElem.value || '(Chưa điền)';
+        }
+      });
+    }
+
+    function generatePDF() {
+      syncPrintableData();
+
+      const studentName = document.getElementById('student-name').value.trim() || 'HocSinh';
+      const studentClass = document.getElementById('student-class').value.trim() || 'Lop10';
+      const cleanName = studentName.replace(/[^a-zA-L0-9_àáảãạăắằẳẵặâấầẩẫậèéẻẽẹêếềểễệđìíỉĩịòóỏõọôốồổỗộơớờởỡợùúủũụưứừửữựỳýỷỹỵ\s]/gi, '').replace(/\s+/g, '_');
+
+      document.body.classList.add('exporting');
+
+      const element = document.getElementById('pdf-content');
+      const opt = {
+        margin:       [12, 12, 12, 12],
+        filename:     `DongLuong_Bai18_${studentClass}_${cleanName}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true, logging: false },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      html2pdf().set(opt).from(element).save().then(() => {
+        document.body.classList.remove('exporting');
+      }).catch(err => {
+        console.error("PDF Export Error:", err);
+        document.body.classList.remove('exporting');
+      });
+    }
+  </script>
+</body>
+</html>
