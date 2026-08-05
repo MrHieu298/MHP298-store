@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phiếu Đánh Giá Học Tập</title>
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --primary-hover: #4338CA;
+            --bg-gradient: linear-gradient(135deg, #E0E7FF 0%, #F3E8FF 100%);
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --border-color: #E2E8F0;
+            --text-dark: #1E293B;
+            --text-muted: #64748B;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-dark);
+            min-height: 100vh;
+            padding: 20px 10px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            color: var(--primary);
+            font-size: 1.6rem;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .header p {
+            color: #EF4444;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .info-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+            background: #F8FAFC;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .input-group label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        .input-group input {
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            outline: none;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+        }
+
+        /* Rubric Table Rules */
+        .table-responsive {
+            overflow-x: auto;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #FFFFFF;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            padding: 12px 10px;
+            border-bottom: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
+        }
+
+        th:last-child, td:last-child {
+            border-right: none;
+        }
+
+        th {
+            background-color: #EEF2FF;
+            color: var(--primary);
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .cat-cell {
+            font-weight: 700;
+            background-color: #F8FAFC;
+            color: #334155;
+            white-space: nowrap;
+        }
+
+        .option-cell {
+            text-align: center;
+            width: 80px;
+            cursor: pointer;
+        }
+
+        /* Custom Radio Buttons */
+        .radio-btn {
+            display: none;
+        }
+
+        .radio-label {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid #CBD5E1;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1.1rem;
+        }
+
+        .radio-btn:checked + .radio-label {
+            transform: scale(1.15);
+        }
+
+        /* Color variations for options */
+        .radio-btn[value="tot"]:checked + .radio-label {
+            border-color: #F59E0B;
+            background-color: #FEF3C7;
+        }
+
+        .radio-btn[value="dat"]:checked + .radio-label {
+            border-color: #10B981;
+            background-color: #D1FAE5;
+        }
+
+        .radio-btn[value="chuadat"]:checked + .radio-label {
+            border-color: #EF4444;
+            background-color: #FEE2E2;
+        }
+
+        /* Action & Lock Styling */
+        .action-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-submit {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+            transition: all 0.2s;
+        }
+
+        .btn-submit:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .timestamp-box {
+            display: none;
+            width: 100%;
+            padding: 12px;
+            background: #ECFDF5;
+            border: 1px dashed #10B981;
+            border-radius: 10px;
+            text-align: center;
+            color: #065F46;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        /* Locked state styling */
+        .locked input, .locked .radio-label {
+            pointer-events: none;
+        }
+        .locked .radio-label {
+            opacity: 0.5;
+        }
+        .locked .radio-btn:checked + .radio-label {
+            opacity: 1;
+        }
+
+        @media (max-width: 600px) {
+            .info-section {
+                grid-template-columns: 1fr;
+            }
+            th, td {
+                padding: 8px 6px;
+                font-size: 0.82rem;
+            }
+            .option-cell {
+                width: 50px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="rubrikContainer">
+    <div class="header">
+        <h1>Phiếu Đánh Giá Học Tập</h1>
+        <p>⚠️ Học sinh hoàn thành và chụp màn hình gửi Giáo viên</p>
+    </div>
+
+    <!-- Thông tin học sinh -->
+    <div class="info-section">
+        <div class="input-group">
+            <label for="studentName">Họ và Tên Học Sinh:</label>
+            <input type="text" id="studentName" placeholder="Nhập đầy đủ họ tên...">
+        </div>
+        <div class="input-group">
+            <label for="studentClass">Lớp Học:</label>
+            <input type="text" id="studentClass" placeholder="Nhập tên lớp...">
+        </div>
+    </div>
+
+    <!-- Bảng Rubric -->
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nội dung</th>
+                    <th>Tiêu chí</th>
+                    <th>Tốt<br>(🌟)</th>
+                    <th>Đạt<br>(✅)</th>
+                    <th>Chưa đạt<br>(❌)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Phiếu học tập -->
+                <tr>
+                    <td class="cat-cell">Phiếu học tập</td>
+                    <td>Trả lời đầy đủ câu hỏi</td>
+                    <td class="option-cell"><input type="radio" name="crit_1" value="tot" id="c1_1" class="radio-btn"><label for="c1_1" class="radio-label">🌟</label></td>
+                    <td class="option-cell"><input type="radio" name="crit_1" value="dat" id="c1_2" class="radio-btn"><label for="c1_2" class="radio-label">✅</label></td>
+                    <td class="option-cell"><input type="radio" name="crit_1" value="chuadat" id="c1_3" class="radio-btn"><label for="c1_3" class="radio-label">❌</label></td>
+                </tr>
+                <!-- Khởi động -->
+                <tr>
+                    <td class="cat-cell">Khởi động</td>
+                    <td>Hiểu hiện tượng (được nêu trong phiếu học tập)</td>
+                    <td class="option-cell"><input type="radio" name="crit_2" value="tot" id="c2_1" class="radio-btn"><label for="c2_1" class="radio-label">🌟</label></td>
+                    <td class="option-cell"><input type="radio" name="crit_2" value="dat" id="c2_2" class="radio-btn"><label for="c2_2" class="radio-label">✅</label></td>
+                    <td class="option-cell"><input type="radio" name="crit_2" value="chuadat" id="c2_3" class="radio-btn"><label for="c2_3" class="radio-label">❌</label></td>
+                </tr>
+                <!-- Thí nghiệm 1 -->
+                <tr>
+                    <td class="cat-cell" rowspan="2">Thí nghiệm 1</td>
+                    <td>Thực hiện đủ 3 lần</td>
+                    <td class="option-cell"><input type="radio" name="crit_3" value="tot" id="c3_1" class="radio-btn"><label for="c3_1" class="radio-label">🌟</label></td>
+                    <td class="option-cell"><input type="radio" name="crit_3" value="dat" id="c3_2" class="radio-btn"><label for="c3_2" class="radio-label">✅</label></td>
+                    <td class="option-cell"><input type="radio" name="crit_3" value="chuadat" id="c3_3" class="radio-btn"><label for="c3_3" class="radio-label">❌</label></td>
+                </tr>
+                <tr>
+                    <td>Hoàn thành câu hỏi tương tác</td>
+                    <td class="option-cell"><input type="radio" name="crit_4" value="tot" id="c4_1" class="radio-btn"><label for="c4_1" class="radio-label">🌟</label></td>
+                    <td class="option-cell"><input type="radio" name="crit_4" value="dat" id="c4_2" class="radio-btn"><label for="c4_2" class="radio-label">✅</label></td>
+                    <td class="option-cell"><input type="radio" name="crit_4" value="chuadat" id="c4_3" class="radio-btn"><label for="c4_3" class="radio-label">❌</label></td>
+                </tr>
+                <!-- Thí nghiệm 2 -->
+                <tr>
+                    <td class="cat-cell" rowspan="2">Thí nghiệm 2</td>
+                    <td>Thực hiện thí nghiệm, Quan sát</td>
+                    <td class="option-cell"><input type="radio" name="crit_5" value="tot" id="c5_1" class="radio-btn"><label for="c5_1" class="radio-label">🌟</label></td>
+                    <td class="option-cell"><input type="radio" name="crit_5" value="dat" id="c5_2" class="radio-btn"><label for="c5_2" class="radio-label">✅</label></td>
+                    <td class="option-cell"><input type="radio" name="crit_5" value="chuadat" id="c5_3" class="radio-btn"><label for="c5_3" class="radio-label">❌</label></td>
+                </tr>
+                <tr>
+                    <td>Hoàn thành câu hỏi mở đầu/bí ẩn</td>
+                    <td class="option-cell"><input type="radio" name="crit_6" value="tot" id="c6_1" class="radio-btn"><label for="c6_1" class="radio-label">🌟</label></td>
+                    <td class="option-cell"><input type="radio" name="crit_6" value="dat" id="c6_2" class="radio-btn"><label for="c6_2" class="radio-label">✅</label></td>
+                    <td class="option-cell"><input type="radio" name="crit_6" value="chuadat" id="c6_3" class="radio-btn"><label for="c6_3" class="radio-label">❌</label></td>
+                </tr>
+                <!-- Tương tác Gemini -->
+                <tr>
+                    <td class="cat-cell" rowspan="2">Tương tác Gemini</td>
+                    <td>Sử dụng prompt</td>
+                    <td class="option-cell"><input type="radio" name="crit_7" value="tot" id="c7_1" class="radio-btn"><label for="c7_1" class="radio-label">🌟</label></td>
+                    <td class="option-cell"><input type="radio" name="crit_7" value="dat" id="c7_2" class="radio-btn"><label for="c7_2" class="radio-label">✅</label></td>
+                    <td class="option-cell"><input type="radio" name="crit_7" value="chuadat" id="c7_3" class="radio-btn"><label for="c7_3" class="radio-label">❌</label></td>
+                </tr>
+                <tr>
+                    <td>Tạo được câu hỏi/bài toán</td>
+                    <td class="option-cell"><input type="radio" name="crit_8" value="tot" id="c8_1" class="radio-btn"><label for="c8_1" class="radio-label">🌟</label></td>
+                    <td class="option-cell"><input type="radio" name="crit_8" value="dat" id="c8_2" class="radio-btn"><label for="c8_2" class="radio-label">✅</label></td>
+                    <td class="option-cell"><input type="radio" name="crit_8" value="chuadat" id="c8_3" class="radio-btn"><label for="c8_3" class="radio-label">❌</label></td>
+                </tr>
+                <!-- Hoạt động nhóm -->
+                <tr>
+                    <td class="cat-cell">Hoạt động nhóm</td>
+                    <td>Tích cực hợp tác, đóng góp vào nhóm</td>
+                    <td class="option-cell"><input type="radio" name="crit_9" value="tot" id="c9_1" class="radio-btn"><label for="c9_1" class="radio-label">🌟</label></td>
+                    <td class="option-cell"><input type="radio" name="crit_9" value="dat" id="c9_2" class="radio-btn"><label for="c9_2" class="radio-label">✅</label></td>
+                    <td class="option-cell"><input type="radio" name="crit_9" value="chuadat" id="c9_3" class="radio-btn"><label for="c9_3" class="radio-label">❌</label></td>
+                </tr>
+                <!-- Bài kiểm tra -->
+                <tr>
+                    <td class="cat-cell" rowspan="2">Bài kiểm tra</td>
+                    <td>Nghiêm túc, trung thực</td>
+                    <td class="option-cell"><input type="radio" name="crit_10" value="tot" id="c10_1" class="radio-btn"><label for="c10_1" class="radio-label">🌟</label></td>
+                    <td class="option-cell"><input type="radio" name="crit_10" value="dat" id="c10_2" class="radio-btn"><label for="c10_2" class="radio-label">✅</label></td>
+                    <td class="option-cell"><input type="radio" name="crit_10" value="chuadat" id="c10_3" class="radio-btn"><label for="c10_3" class="radio-label">❌</label></td>
+                </tr>
+                <tr>
+                    <td>Kết quả</td>
+                    <td class="option-cell"><input type="radio" name="crit_11" value="tot" id="c11_1" class="radio-btn"><label for="c11_1" class="radio-label">🌟</label></td>
+                    <td class="option-cell"><input type="radio" name="crit_11" value="dat" id="c11_2" class="radio-btn"><label for="c11_2" class="radio-label">✅</label></td>
+                    <td class="option-cell"><input type="radio" name="crit_11" value="chuadat" id="c11_3" class="radio-btn"><label for="c11_3" class="radio-label">❌</label></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Action Area -->
+    <div class="action-area">
+        <button type="button" class="btn-submit" onclick="submitAssessment()">CHỐT KẾT QUẢ & GHI NHẬN THỜI GIAN</button>
+        <div id="timestampBox" class="timestamp-box"></div>
+    </div>
+</div>
+
+<script>
+    function submitAssessment() {
+        const name = document.getElementById('studentName').value.trim();
+        const studentClass = document.getElementById('studentClass').value.trim();
+        
+        // Kiểm tra thông tin cá nhân
+        if (!name || !studentClass) {
+            alert('Vui lòng điền Tên và Lớp trước khi chốt kết quả!');
+            return;
+        }
+
+        // Kiểm tra đã đánh giá đủ 11 tiêu chí chưa
+        const totalCriteria = 11;
+        let answeredCount = 0;
+        
+        for (let i = 1; i <= totalCriteria; i++) {
+            const selected = document.querySelector(`input[name="crit_${i}"]:checked`);
+            if (selected) answeredCount++;
+        }
+
+        if (answeredCount < totalCriteria) {
+            alert(`Vui lòng đánh giá đủ tất cả ${totalCriteria} tiêu chí! (Hiện tại: ${answeredCount}/${totalCriteria})`);
+            return;
+        }
+
+        // Khóa form sau khi chốt
+        document.getElementById('rubrikContainer').classList.add('locked');
+        
+        // Ghi nhận thời gian
+        const now = new Date();
+        const timeString = now.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        const dateString = now.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        
+        const timestampBox = document.getElementById('timestampBox');
+        timestampBox.innerHTML = `✓ Kết quả đã chốt lúc: <strong>${timeString} - Ngày ${dateString}</strong><br><small>Hãy chụp màn hình toàn bộ khung này để nộp bài cho Giáo viên.</small>`;
+        timestampBox.style.display = 'block';
+
+        // Ẩn nút bấm để ảnh chụp màn hình được gọn gàng
+        document.querySelector('.btn-submit').style.display = 'none';
+    }
+</script>
+
+</body>
+</html>
