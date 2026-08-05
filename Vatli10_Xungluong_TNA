@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tìm hiểu Xung lượng - Xung lực qua Thí nghiệm thả rơi vật với túi khí</title>
+    <!-- Nhúng MathJax 3 -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        :root {
+            --primary: #0284C7;
+            --primary-dark: #0369A1;
+            --bg-color: #E0F2FE;
+            --text-dark: #0F172A;
+            --accent-pink: #F43F5E;
+            --accent-green: #10B981;
+            --accent-orange: #F59E0B;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: linear-gradient(135deg, #E0F2FE 0%, #F0F9FF 100%);
+            color: var(--text-dark);
+            padding: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1240px;
+            height: calc(100vh - 16px);
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(10px);
+            border-radius: 14px;
+            padding: 12px 16px;
+            box-shadow: 0 10px 25px rgba(2, 132, 199, 0.15);
+            border: 2px solid #38BDF8;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        /* HEADER */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #BAE6FD;
+            padding-bottom: 6px;
+        }
+
+        .header h1 {
+            background: linear-gradient(90deg, #0284C7, #0D9488);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 1.05rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .dir-toggle-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #E0F2FE;
+            padding: 4px 10px;
+            border-radius: 8px;
+            border: 1.5px solid #7DD3FC;
+        }
+
+        .dir-toggle-group label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #0369A1;
+        }
+
+        .dir-btn {
+            border: none;
+            padding: 4px 10px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border-radius: 6px;
+            cursor: pointer;
+            background: #FFFFFF;
+            color: #0369A1;
+            border: 1px solid #7DD3FC;
+            transition: all 0.2s ease;
+        }
+
+        .dir-btn.active {
+            background: #0284C7;
+            color: white;
+            border-color: #0284C7;
+            box-shadow: 0 2px 5px rgba(2, 132, 199, 0.3);
+        }
+
+        .exp-layout {
+            display: grid;
+            grid-template-columns: 1fr 420px;
+            gap: 10px;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            height: 100%;
+            min-height: 0;
+        }
+
+        /* CANVAS AREA */
+        .canvas-area {
+            position: relative;
+            background: linear-gradient(180deg, #FFFFFF 0%, #F0FDFA 100%);
+            border-radius: 10px;
+            padding: 3px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex: 1;
+            min-height: 0;
+            box-shadow: inset 0 0 12px rgba(56, 189, 248, 0.15);
+            border: 2px solid #7DD3FC;
+        }
+
+        canvas {
+            background: #F8FAFC;
+            border-radius: 8px;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* NÚT VECTOR NẰM GỌN GÓC PHẢI DƯỚI */
+        .canvas-tools-bottom-right {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            z-index: 10;
+        }
+
+        .btn-vector {
+            background: linear-gradient(135deg, #7C3AED, #6D28D9);
+            border: 1px solid #A78BFA;
+            color: #FFFFFF;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(124, 58, 237, 0.25);
+            transition: all 0.2s ease;
+            opacity: 0.9;
+        }
+
+        .btn-vector:hover {
+            opacity: 1;
+            transform: translateY(-1px);
+        }
+
+        .btn-vector.active {
+            background: linear-gradient(135deg, #DC2626, #B91C1C);
+            border-color: #FCA5A5;
+        }
+
+        /* CONTROL PANEL */
+        .control-panel {
+            background: #F0F9FF;
+            border: 1.5px solid #BAE6FD;
+            padding: 8px 10px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .panel-title {
+            font-size: 0.78rem;
+            font-weight: 800;
+            color: #0369A1;
+            border-bottom: 2px solid #7DD3FC;
+            padding-bottom: 2px;
+        }
+
+        .params-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 6px 10px;
+        }
+
+        .param-group {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .param-group label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #1E293B;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .param-group input[type="range"] {
+            width: 100%;
+            accent-color: #0284C7;
+            cursor: pointer;
+            height: 14px;
+        }
+
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+        }
+
+        .btn {
+            border: none;
+            padding: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .btn-run { background: linear-gradient(135deg, #10B981, #059669); color: white; }
+        .btn-run:hover { background: linear-gradient(135deg, #059669, #047857); }
+
+        .btn-reset { background: linear-gradient(135deg, #F1F5F9, #E2E8F0); color: #475569; border: 1px solid #CBD5E1; }
+        .btn-reset:hover { background: #CBD5E1; }
+
+        /* RESULTS PANEL */
+        .results-panel {
+            background: #F0F9FF;
+            border: 1.5px solid #BAE6FD;
+            padding: 8px 10px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .results-card {
+            background: #FFFFFF;
+            border: 1.5px solid #BEE3F8;
+            padding: 8px 10px;
+            border-radius: 8px;
+            font-size: 0.73rem;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+        }
+
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px dashed #E2E8F0;
+            padding-bottom: 2px;
+            min-height: 22px;
+        }
+
+        .data-row:last-child { border-bottom: none; }
+        .data-row strong { color: #0284C7; font-weight: 800; }
+        .placeholder-text { color: #94A3B8; font-style: italic; font-weight: normal; }
+
+        .sub-header {
+            font-weight: 800;
+            color: #0369A1;
+            background: #E0F2FE;
+            padding: 3px 6px;
+            border-radius: 4px;
+            margin-top: 4px;
+            font-size: 0.68rem;
+            text-transform: uppercase;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.68rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 4px;
+        }
+
+        .status-idle { background: #E2E8F0; color: #475569; }
+        .status-falling { background: #FEF3C7; color: #D97706; }
+        .status-impact { background: #DCFCE7; color: #15803D; }
+
+        .btn-toggle-summary {
+            background: linear-gradient(135deg, #F59E0B, #D97706);
+            color: #FFFFFF;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            cursor: pointer;
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .physics-summary-box {
+            display: none;
+            background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%);
+            border: 1.5px solid #F59E0B;
+            border-radius: 8px;
+            padding: 8px 10px;
+            margin-top: 4px;
+        }
+
+        .summary-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+            margin-bottom: 4px;
+            font-size: 0.7rem;
+            color: #78350F;
+        }
+
+        .summary-badge {
+            background: #F59E0B;
+            color: #FFFFFF;
+            font-weight: 800;
+            font-size: 0.62rem;
+            padding: 1px 5px;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>🧪 TÌM HIỂU XUNG LƯỢNG - XUNG LỰC QUA THÍ NGHIỆM THẢ RƠI VẬT VỚI TÚI KHÍ</h1>
+        
+        <div class="dir-toggle-group">
+            <label>Chiều dương (+):</label>
+            <button id="dirDownBtn" class="dir-btn active" onclick="setPositiveDir('down')">⬇️ Hướng xuống</button>
+            <button id="dirUpBtn" class="dir-btn" onclick="setPositiveDir('up')">⬆️ Hướng lên</button>
+        </div>
+    </div>
+
+    <div class="exp-layout">
+        <div class="left-column">
+            <div class="canvas-area">
+                <canvas id="simCanvas" width="720" height="400"></canvas>
+                <div class="canvas-tools-bottom-right">
+                    <button id="vectorBtn" class="btn-vector" onclick="toggleSlowVectorMode()">
+                        🔍 Vector (Chạy chậm)
+                    </button>
+                </div>
+            </div>
+
+            <div class="control-panel">
+                <div class="panel-title">⚙️ THÔNG SỐ BAN ĐẦU</div>
+                <div class="params-grid">
+                    <div class="param-group">
+                        <label>Độ dày túi $d$: <span id="lblAirbag">10 cm</span></label>
+                        <input type="range" id="inputAirbag" min="0" max="25" step="1" value="10" oninput="onInputChange()">
+                    </div>
+
+                    <div class="param-group">
+                        <label>Độ cao thả $h$: <span id="lblHeight">2.0 m</span></label>
+                        <input type="range" id="inputHeight" min="0.5" max="4.0" step="0.1" value="2.0" oninput="onInputChange()">
+                    </div>
+
+                    <div class="param-group">
+                        <label>Khối lượng $m$: <span id="lblMass">0.20 kg</span></label>
+                        <input type="range" id="inputMass" min="0.05" max="0.5" step="0.05" value="0.20" oninput="onInputChange()">
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-run" onclick="runNormalSimulation()">🚀 THẢ VẬT RƠI (Thường)</button>
+                    <button class="btn btn-reset" onclick="resetSim()">🔄 ĐẶT LẠI</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="results-panel">
+            <div class="panel-title">📊 DIỄN TIẾN THÔNG SỐ VẬT LÝ</div>
+            
+            <div class="results-card">
+                <div id="statusBadge" class="status-badge status-idle">TRẠNG THÁI: CHỜ THẢ VẬT</div>
+
+                <!-- 1. TRẠNG THÁI ĐANG RƠI -->
+                <div class="sub-header">1. TRẠNG THÁI ĐANG RƠI</div>
+                <div class="data-row">
+                    <span>Thời gian rơi ($t$):</span>
+                    <strong id="resT"><span class="placeholder-text">-- s</span></strong>
+                </div>
+                <div class="data-row">
+                    <span>Vận tốc hiện tại ($v$):</span>
+                    <strong id="resV"><span class="placeholder-text">-- m/s</span></strong>
+                </div>
+                <div class="data-row">
+                    <span>Động lượng hiện tại ($p = m \cdot v$):</span>
+                    <strong id="resP"><span class="placeholder-text">-- kg·m/s</span></strong>
+                </div>
+
+                <!-- 2. TRẠNG THÁI CHẠM TÚI KHÍ / SÀN -->
+                <div class="sub-header">2. CHẠM TÚI KHÍ (TRƯỚC & SAU CHẠM)</div>
+                <div class="data-row">
+                    <span>Vận tốc trước va chạm ($v_1$):</span>
+                    <strong id="resV1"><span class="placeholder-text">-- m/s</span></strong>
+                </div>
+                <div class="data-row">
+                    <span>Động lượng trước va chạm ($p_1$):</span>
+                    <strong id="resP1"><span class="placeholder-text">-- kg·m/s</span></strong>
+                </div>
+                <div class="data-row">
+                    <span>Vận tốc sau va chạm ($v_2$):</span>
+                    <strong id="resV2"><span class="placeholder-text">-- m/s</span></strong>
+                </div>
+                <div class="data-row">
+                    <span>Thời gian va chạm ($\Delta t$):</span>
+                    <strong id="resDt"><span class="placeholder-text">-- s</span></strong>
+                </div>
+                <div class="data-row">
+                    <span>Độ biến thiên động lượng ($\Delta p$):</span>
+                    <strong id="resDeltaP" style="color: #0284C7;"><span class="placeholder-text">-- kg·m/s</span></strong>
+                </div>
+                <div class="data-row">
+                    <span>Xung lực trung bình ($F_{\text{tb}}$):</span>
+                    <strong id="resF" style="color: #F43F5E;"><span class="placeholder-text">-- N</span></strong>
+                </div>
+
+                <button class="btn-toggle-summary" onclick="toggleSummary()">
+                    <span>💡 KẾT LUẬN VẬT LÝ</span>
+                    <span id="summaryIcon">▼</span>
+                </button>
+
+                <div id="physicsSummaryBox" class="physics-summary-box">
+                    <div class="summary-item">
+                        <span class="summary-badge">Định lý</span>
+                        <div>Xung lượng lực bằng độ biến thiên động lượng:<br><strong>$F_{\text{tb}} \cdot \Delta t = \Delta p$</strong></div>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-badge">Ứng dụng</span>
+                        <div>Túi khí càng dày $\rightarrow$ Kéo dài $\Delta t$ $\rightarrow$ Xung lực $F_{\text{tb}}$ giảm rõ rệt giúp bảo vệ vật!</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const canvas = document.getElementById('simCanvas');
+    const ctx = canvas.getContext('2d');
+    const g = 9.81;
+
+    let positiveDir = 'down'; 
+    let animId = null;
+    let isRunning = false;
+    let showVectors = false;
+    let timeSpeed = 1.0;
+
+    let state = {
+        h: 2.0,
+        m: 0.20,
+        airbagThickness: 10, 
+        currentH: 2.0,
+        vy: 0,
+        fallTime: 0,
+        dt: 0.05,
+        indentProgress: 0, 
+        isColliding: false,
+        finished: false
+    };
+
+    function toggleSummary() {
+        const box = document.getElementById('physicsSummaryBox');
+        const icon = document.getElementById('summaryIcon');
+        if (box.style.display === 'block') {
+            box.style.display = 'none';
+            icon.innerText = '▼';
+        } else {
+            box.style.display = 'block';
+            icon.innerText = '▲';
+            if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise();
+        }
+    }
+
+    function setPositiveDir(dir) {
+        positiveDir = dir;
+        document.getElementById('dirDownBtn').classList.toggle('active', dir === 'down');
+        document.getElementById('dirUpBtn').classList.toggle('active', dir === 'up');
+        
+        updatePhysicsData();
+        draw();
+    }
+
+    function onInputChange() {
+        resetSim();
+    }
+
+    function toggleSlowVectorMode() {
+        showVectors = true;
+        timeSpeed = 0.35;
+        document.getElementById('vectorBtn').classList.add('active');
+        runSimulation();
+    }
+
+    function runNormalSimulation() {
+        showVectors = false;
+        timeSpeed = 1.0;
+        document.getElementById('vectorBtn').classList.remove('active');
+        runSimulation();
+    }
+
+    function resetSim() {
+        if (animId) cancelAnimationFrame(animId);
+        isRunning = false;
+
+        state.h = parseFloat(document.getElementById('inputHeight').value);
+        state.m = parseFloat(document.getElementById('inputMass').value);
+        state.airbagThickness = parseInt(document.getElementById('inputAirbag').value);
+        
+        state.currentH = state.h;
+        state.vy = 0;
+        state.fallTime = 0;
+        state.indentProgress = 0;
+        state.isColliding = false;
+        state.finished = false;
+
+        document.getElementById('lblHeight').innerText = state.h.toFixed(1) + " m";
+        document.getElementById('lblMass').innerText = state.m.toFixed(2) + " kg";
+        document.getElementById('lblAirbag').innerText = state.airbagThickness === 0 ? "0 cm (Sàn cứng)" : state.airbagThickness + " cm";
+
+        if (state.airbagThickness === 0) {
+            state.dt = 0.005; 
+        } else {
+            state.dt = 0.02 + (state.airbagThickness / 25) * 0.12; 
+        }
+
+        const badge = document.getElementById('statusBadge');
+        badge.className = "status-badge status-idle";
+        badge.innerText = "TRẠNG THÁI: CHỜ THẢ VẬT";
+
+        document.getElementById('resT').innerHTML = `<span class="placeholder-text">-- s</span>`;
+        document.getElementById('resV').innerHTML = `<span class="placeholder-text">-- m/s</span>`;
+        document.getElementById('resP').innerHTML = `<span class="placeholder-text">-- kg·m/s</span>`;
+        
+        document.getElementById('resV1').innerHTML = `<span class="placeholder-text">-- m/s</span>`;
+        document.getElementById('resP1').innerHTML = `<span class="placeholder-text">-- kg·m/s</span>`;
+        document.getElementById('resV2').innerHTML = `<span class="placeholder-text">-- m/s</span>`;
+        document.getElementById('resDt').innerHTML = `<span class="placeholder-text">-- s</span>`;
+        document.getElementById('resDeltaP').innerHTML = `<span class="placeholder-text">-- kg·m/s</span>`;
+        document.getElementById('resF').innerHTML = `<span class="placeholder-text">-- N</span>`;
+
+        draw();
+    }
+
+    function formatVal(val, decimals = 2, unit = "") {
+        let str = val.toFixed(decimals);
+        if (val > 0) str = "+" + str;
+        return str + (unit ? " " + unit : "");
+    }
+
+    function updatePhysicsData() {
+        const sign = positiveDir === 'down' ? 1 : -1;
+
+        if (isRunning && !state.isColliding && !state.finished) {
+            const vCurrent = state.vy * sign;
+            const pCurrent = state.m * vCurrent;
+
+            document.getElementById('statusBadge').className = "status-badge status-falling";
+            document.getElementById('statusBadge').innerText = "TRẠNG THÁI: ĐANG RƠI";
+
+            document.getElementById('resT').innerText = state.fallTime.toFixed(3) + " s";
+            document.getElementById('resV').innerText = formatVal(vCurrent, 2, "m/s");
+            document.getElementById('resP').innerText = formatVal(pCurrent, 2, "kg·m/s");
+        }
+
+        if (state.isColliding || state.finished) {
+            document.getElementById('statusBadge').className = "status-badge status-impact";
+            document.getElementById('statusBadge').innerText = "TRẠNG THÁI: CHẠM TÚI KHÍ / SÀN";
+
+            const v1_mag = Math.sqrt(2 * g * state.h);
+            const v1 = v1_mag * sign;
+            const p1 = state.m * v1;
+
+            const v2 = 0;
+            const p2 = 0;
+
+            const deltaP = p2 - p1;
+            const F_tb = deltaP / state.dt;
+
+            document.getElementById('resV1').innerText = formatVal(v1, 2, "m/s");
+            document.getElementById('resP1').innerText = formatVal(p1, 2, "kg·m/s");
+            document.getElementById('resV2').innerText = "0.00 m/s";
+            document.getElementById('resDt').innerText = state.dt.toFixed(3) + " s";
+            document.getElementById('resDeltaP').innerText = formatVal(deltaP, 2, "kg·m/s");
+            document.getElementById('resF').innerText = formatVal(F_tb, 1, "N");
+        }
+    }
+
+    function drawGrid() {
+        ctx.strokeStyle = '#F1F5F9';
+        ctx.lineWidth = 1;
+        for (let x = 0; x < canvas.width; x += 20) {
+            ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+        }
+        for (let y = 0; y < canvas.height; y += 20) {
+            ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+        }
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawGrid();
+
+        const groundY = 320; 
+        const ballRadius = 12 + state.m * 10;
+        const scaleY = 240 / 4.0; 
+
+        // Trục chiều dương
+        ctx.strokeStyle = '#0284C7';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(50, 30);
+        ctx.lineTo(50, 340);
+        ctx.stroke();
+
+        if (positiveDir === 'down') {
+            drawArrowHead(50, 340, Math.PI / 2, '#0284C7');
+            ctx.fillStyle = '#0284C7';
+            ctx.font = 'bold 11px sans-serif';
+            ctx.fillText("(+) Chiều dương", 8, 355);
+        } else {
+            drawArrowHead(50, 30, -Math.PI / 2, '#0284C7');
+            ctx.fillStyle = '#0284C7';
+            ctx.font = 'bold 11px sans-serif';
+            ctx.fillText("(+) Chiều dương", 8, 20);
+        }
+
+        // Thước đo độ cao
+        ctx.strokeStyle = '#94A3B8';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(130, groundY - 4.0 * scaleY);
+        ctx.lineTo(130, groundY);
+        ctx.stroke();
+
+        ctx.fillStyle = '#64748B';
+        ctx.font = 'bold 10px sans-serif';
+        for (let h = 0; h <= 4.0; h += 0.5) {
+            let yPos = groundY - h * scaleY;
+            ctx.beginPath(); ctx.moveTo(125, yPos); ctx.lineTo(135, yPos); ctx.stroke();
+            ctx.fillText(h.toFixed(1) + "m", 100, yPos + 3);
+        }
+
+        const airbagVisualH = (state.airbagThickness / 25) * 65;
+        const airbagWidth = 320;
+        const airbagX = 220;
+
+        // VẼ TÚI KHÍ / SÀN - ĐÃ ĐỔI MÀU SÁNG DỊU DỄ NHÌN VECTOR
+        if (state.airbagThickness === 0) {
+            ctx.fillStyle = '#64748B';
+            ctx.fillRect(airbagX, groundY, airbagWidth, 12);
+            ctx.fillStyle = '#FFFFFF';
+            ctx.font = 'bold 11px sans-serif';
+            ctx.fillText("SÀN BÊ TÔNG CỨNG (d = 0 cm)", airbagX + 70, groundY + 10);
+        } else {
+            const maxIndentPx = (state.airbagThickness / 25) * 20; 
+            const currentIndentPx = state.indentProgress * maxIndentPx;
+
+            ctx.beginPath();
+            ctx.moveTo(airbagX, groundY);
+            ctx.quadraticCurveTo(
+                airbagX + airbagWidth / 2, groundY + currentIndentPx * 1.8, 
+                airbagX + airbagWidth, groundY
+            );
+            ctx.lineTo(airbagX + airbagWidth, groundY + airbagVisualH);
+            ctx.lineTo(airbagX, groundY + airbagVisualH);
+            ctx.closePath();
+
+            // Gradient màu túi khí mờ nhẹ (Tone xanh nhạt trong suốt nhẹ)
+            let gradient = ctx.createLinearGradient(0, groundY, 0, groundY + Math.max(10, airbagVisualH));
+            gradient.addColorStop(0, '#E0F2FE'); 
+            gradient.addColorStop(1, '#BAE6FD'); 
+            ctx.fillStyle = gradient;
+            ctx.fill();
+
+            ctx.strokeStyle = '#38BDF8';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Nhãn túi khí
+            ctx.fillStyle = '#0369A1';
+            ctx.font = 'bold 11px sans-serif';
+            let labelY = groundY + Math.min(airbagVisualH - 6, airbagVisualH / 2 + 4);
+            if (airbagVisualH < 18) labelY = groundY + airbagVisualH + 12;
+            
+            ctx.fillText(`TÚI KHÍ SAFEFLEX (d = ${state.airbagThickness} cm)`, airbagX + 65, labelY);
+        }
+
+        // TÍNH TOÁN VỊ TRÍ QUẢ CẦU
+        let currentBallY = groundY - (state.currentH * scaleY);
+
+        if (state.isColliding || (state.finished && state.airbagThickness > 0)) {
+            const maxIndentPx = (state.airbagThickness / 25) * 20;
+            currentBallY = groundY + (state.indentProgress * maxIndentPx);
+        }
+
+        // Vẽ quả cầu
+        ctx.shadowColor = 'rgba(2, 132, 199, 0.3)';
+        ctx.shadowBlur = 6;
+        ctx.fillStyle = (state.airbagThickness === 0 && state.finished) ? '#F43F5E' : '#0284C7';
+        ctx.beginPath();
+        ctx.arc(380, currentBallY - ballRadius, ballRadius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#FFFFFF';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = 'bold 10px sans-serif';
+        ctx.fillText("m", 377, currentBallY - ballRadius + 3);
+
+        // VẼ CÁC VECTOR VẬT LÝ - RÕ RÀNG NỔI BẬT
+        if (showVectors) {
+            // 1. Trọng lực P (luôn hiện khi bật quan sát vector)
+            drawVector(380, currentBallY - ballRadius, 0, 30, '#10B981', 'P');
+
+            // 2. Vận tốc v (khi đang rơi)
+            if (isRunning && !state.isColliding && state.vy > 0.1) {
+                let vLength = Math.min(65, state.vy * 8);
+                drawVector(380, currentBallY, 0, vLength, '#D97706', 'v');
+            }
+
+            // 3. Xung lực F_tb (HIỂN THỊ KHI VA CHẠM VÀ GIỮ NGUYÊN KHI HOÀN THÀNH ĐỂ HS QUAN SÁT)
+            if (state.isColliding || state.finished) {
+                let forceLength = Math.min(85, 30 + (1 / (state.airbagThickness + 1)) * 300);
+                drawVector(380, currentBallY - ballRadius, 0, -forceLength, '#DC2626', 'F_tb');
+            }
+        }
+    }
+
+    function drawVector(x, y, dx, dy, color, labelText) {
+        const tox = x + dx;
+        const toy = y + dy;
+        const angle = Math.atan2(dy, dx);
+
+        ctx.strokeStyle = color;
+        ctx.fillStyle = color;
+        ctx.lineWidth = 3.5;
+
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(tox, toy);
+        ctx.stroke();
+
+        drawArrowHead(tox, toy, angle, color, 10);
+
+        if (labelText) {
+            ctx.font = 'italic bold 13px "Times New Roman", serif';
+            const textX = tox + 10;
+            const textY = toy + 4;
+            
+            ctx.fillText(labelText, textX, textY);
+            
+            const textWidth = ctx.measureText(labelText).width;
+            const arrowY = textY - 13;
+            const arrowStartX = textX;
+            const arrowEndX = textX + Math.min(textWidth, 14);
+
+            ctx.beginPath();
+            ctx.lineWidth = 1.5;
+            ctx.moveTo(arrowStartX, arrowY);
+            ctx.lineTo(arrowEndX, arrowY);
+            ctx.stroke();
+
+            drawArrowHead(arrowEndX, arrowY, 0, color, 4);
+        }
+    }
+
+    function drawArrowHead(x, y, angle, color, headlen = 9) {
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x - headlen * Math.cos(angle - Math.PI / 6), y - headlen * Math.sin(angle - Math.PI / 6));
+        ctx.lineTo(x - headlen * Math.cos(angle + Math.PI / 6), y - headlen * Math.sin(angle + Math.PI / 6));
+        ctx.closePath();
+        ctx.fill();
+    }
+
+    function runSimulation() {
+        resetSim();
+        isRunning = true;
+        lastTime = performance.now();
+        animate();
+    }
+
+    let lastTime = 0;
+    let collideStartTime = 0;
+
+    function animate(now = performance.now()) {
+        if (!isRunning) return;
+
+        let dtReal = ((now - lastTime) / 1000) * timeSpeed;
+        if (dtReal > 0.05) dtReal = 0.016 * timeSpeed;
+        lastTime = now;
+
+        if (!state.isColliding && !state.finished) {
+            state.fallTime += dtReal;
+            state.vy += g * dtReal;
+            state.currentH -= state.vy * dtReal;
+
+            if (state.currentH <= 0) {
+                state.currentH = 0;
+                state.isColliding = true;
+                collideStartTime = now;
+            }
+        } else if (state.isColliding) {
+            let elapsed = ((now - collideStartTime) / 1000) * timeSpeed;
+            let progress = elapsed / state.dt;
+
+            if (progress >= 1) {
+                progress = 1;
+                state.isColliding = false;
+                state.finished = true;
+                isRunning = false; // Dừng chuyển động nhưng vẫn lưu độ lún để hiện lực F_tb
+            }
+
+            state.indentProgress = Math.sin(progress * Math.PI / 2);
+        }
+
+        updatePhysicsData();
+        draw();
+
+        if (isRunning) {
+            animId = requestAnimationFrame(animate);
+        }
+    }
+
+    resetSim();
+</script>
+
+</body>
+</html>
