@@ -508,7 +508,7 @@
       </div>
 
       <div class="title-sub">PHIẾU HỌC TẬP</div>
-      <h1 class="title-main"><span>BÀI 28</span><span>ĐỘNG LƯỢNG</span></h1>
+      <h1 class="title-main"><span id="lesson-num">BÀI 28</span><span>ĐỘNG LƯỢNG</span></h1>
 
       <div class="student-info">
         <div class="input-group">
@@ -527,7 +527,7 @@
       <div class="section">
         <div class="section-header">
           <span class="num">I</span>
-          <span>KHỞI ĐỘNG TÌNH HUỐNG</span>
+          <span>GIẢI THÍCH TÌNH HUỐNG</span>
         </div>
 
         <p style="font-size: 14px; margin-bottom: 10px;">📌 Chọn 1 trong các tình huống thực tế sau để giải thích:</p>
@@ -548,7 +548,7 @@
             </ul>
           </div>
           <div class="scenario-card">
-            <h4> bowling Tình huống 3: Môn Bowling</h4>
+            <h4>🎳 Tình huống 3: Môn Bowling</h4>
             <ul>
               <li>Bi bowling nặng lăn đến va chạm.</li>
               <li>Làm xô đổ hàng loạt ki (pin) đứng yên.</li>
@@ -765,6 +765,25 @@
       }
     });
 
+    // Hàm chuyển chữ có dấu thành không dấu
+    function removeVietnameseTones(str) {
+      str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
+      str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
+      str = str.replace(/ì|í|ị|ỉ|ĩ/g, "i");
+      str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o");
+      str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u");
+      str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
+      str = str.replace(/đ/g, "d");
+      str = str.replace(/À|Á|Ạ|Ả|Ã|Â|Ầ|Ấ|Ậ|Ẩ|Ẫ|Ă|Ằ|Ắ|Ặ|Ẳ|Ẵ/g, "A");
+      str = str.replace(/È|É|Ẹ|Ẻ|Ẽ|Ê|Ề|Ế|Ệ|Ể|Ễ/g, "E");
+      str = str.replace(/Ì|Í|Ị|Ỉ|Ĩ/g, "I");
+      str = str.replace(/Ò|Ó|Ọ|Ỏ|Õ|Ô|Ồ|Ố|Ộ|Ổ|Ỗ|Ơ|Ờ|Ớ|Ợ|Ở|Ỡ/g, "O");
+      str = str.replace(/Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ/g, "U");
+      str = str.replace(/Ỳ|Ý|Ỵ|Ỷ|Ỹ/g, "Y");
+      str = str.replace(/Đ/g, "D");
+      return str;
+    }
+
     // Chuyển đối tượng Thẻ Ảnh <img> thành DataURL để chèn an toàn vào jsPDF
     function getImgDataUrl(imgElement) {
       return new Promise((resolve) => {
@@ -778,7 +797,6 @@
           canvas.height = imgElement.naturalHeight;
           const ctx = canvas.getContext('2d');
           ctx.drawImage(imgElement, 0, 0);
-          // Hỗ trợ cả định dạng PNG và JPEG khi tạo Canvas DataURL
           resolve(canvas.toDataURL('image/png'));
         } catch (e) {
           console.warn("Lỗi chuyển đổi ảnh logo:", e);
@@ -835,12 +853,25 @@
     async function generatePDF() {
       syncPrintableData();
 
-      const studentName = document.getElementById('student-name').value.trim() || 'Chua_nhap_ten';
-      const studentClass = document.getElementById('student-class').value.trim() || 'Lop';
-      
-      const cleanNameFile = studentName.replace(/[^a-zA-Z0-9_àáảãạăắằẳẵặâấầẩẫậèéẻẽẹêếềểễệđìíỉĩịòóỏõọôốồổỗộơớờởỡợùúủũụưứừửữựỳýỷỹỵ\s]/gi, '').replace(/\s+/g, '_');
+      // Lấy dữ liệu input
+      const rawName = document.getElementById('student-name').value.trim();
+      const rawClass = document.getElementById('student-class').value.trim();
 
-      const headerText = `PHIẾU BÀI LÀM - Học sinh: ${studentName} - Lớp: ${studentClass}`;
+      // Lấy số STT bài học từ DOM (Ví dụ "BÀI 28" => lấy số "28")
+      const lessonElem = document.getElementById('lesson-num');
+      let lessonNo = '28';
+      if (lessonElem) {
+        const match = lessonElem.innerText.match(/\d+/);
+        if (match) lessonNo = match[0];
+      }
+
+      // Xử lý chuỗi tên file chuẩn Vatli10_BaiSTTbai_Lop_HovatenHS.pdf
+      const cleanClass = rawClass ? removeVietnameseTones(rawClass).replace(/\s+/g, '') : '10A1';
+      const cleanName = rawName ? removeVietnameseTones(rawName).replace(/[^a-zA-Z0-9]/g, '') : 'HocSinh';
+      
+      const fileName = `Vatli10_Bai${lessonNo}_${cleanClass}_${cleanName}.pdf`;
+
+      const headerText = `PHIẾU BÀI LÀM - Học sinh: ${rawName || 'Chưa nhập tên'} - Lớp: ${rawClass || 'Chưa nhập lớp'}`;
       const headerImgData = createHeaderImage(headerText);
       
       // Lấy dữ liệu DataURL của logo watermark
@@ -852,7 +883,7 @@
 
       const opt = {
         margin:       [14, 10, 12, 10],
-        filename:     `DongLuong_Bai28_${studentClass}_${cleanNameFile}.pdf`,
+        filename:     fileName,
         image:        { type: 'jpeg', quality: 0.98 },
         html2canvas:  { scale: 2, useCORS: true, logging: false, scrollY: 0 },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
