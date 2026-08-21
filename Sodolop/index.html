@@ -8,9 +8,10 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     :root {
-      --seat-bg-color: #fef08a;       
-      --seat-border-color: #d97706;   
-      --seat-text-color: #451a03;     
+      /* Màu mặc định (màu gỗ đậm) */
+      --seat-bg-color: #d9a05b;       
+      --seat-border-color: #8c531e;   
+      --seat-text-color: #2c1605;     
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
@@ -72,6 +73,18 @@
     .success:hover { background: #15803d; }
     .danger { background: #dc2626; }
     .danger:hover { background: #b91c1c; }
+    
+    /* Nút Màu bảng tên với hiệu ứng tự đổi màu nền khi chọn */
+    .palette-btn { 
+      background: var(--seat-bg-color); 
+      color: var(--seat-text-color); 
+      border: 1.5px solid var(--seat-border-color);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    .palette-btn:hover { 
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
 
     /* Custom Dropdown chọn ảnh với hiệu ứng Hover */
     .custom-dropdown {
@@ -178,7 +191,7 @@
       background: var(--seat-bg-color);
       color: var(--seat-text-color);
       border: 1px solid var(--seat-border-color);
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.25);
     }
 
     .seat.special-group {
@@ -248,87 +261,146 @@
       align-items: center;
       z-index: 100;
     }
-    .modal-content {
-      background: #273548;
-      color: #f1f5f9;
-      padding: 20px;
+    
+    .modal-content.custom-iu-theme {
+      background: #f1f5f9;
+      color: #1e293b;
+      padding: 22px;
       border-radius: 16px;
       width: 640px;
       max-width: 92%;
       max-height: 92vh;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 20px 30px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
       overflow-y: auto;
       position: relative;
-      border: 1px solid #3b4c64;
+      border: 1px solid #cbd5e1;
     }
 
     .modal-header-flex {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
+    }
+
+    /* Style cho Popup Bảng Tên HS */
+    .color-palette-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin: 15px 0;
+    }
+    .color-card {
+      background: #ffffff;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    .color-card:hover {
+      border-color: #0284c7;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.2);
+    }
+    .color-preview-box {
+      width: 100%;
+      height: 45px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 13px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    }
+    .color-card-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #334155;
+      text-align: center;
     }
 
     .meta-inputs-grid {
       display: grid;
       grid-template-columns: 1fr 1fr 1.5fr;
-      gap: 8px;
-      margin-bottom: 8px;
-      background: #1e293b;
-      padding: 8px 10px;
-      border-radius: 8px;
-      border: 1px solid #334155;
+      gap: 10px;
+      margin-bottom: 10px;
+      background: #ffffff;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.03);
     }
     .meta-group {
       display: flex;
       flex-direction: column;
-      gap: 2px;
+      gap: 3px;
     }
     .meta-group label {
-      font-size: 11px;
-      font-weight: bold;
-      color: #38bdf8;
+      font-size: 12px;
+      font-weight: 700;
+      color: #0284c7;
     }
     .meta-group input {
-      padding: 6px 8px;
-      border-radius: 5px;
-      border: 1px solid #475569;
-      background: #273548;
-      color: #fff;
-      font-size: 12px;
+      padding: 7px 10px;
+      border-radius: 6px;
+      border: 1px solid #cbd5e1;
+      background: #f8fafc;
+      color: #0f172a;
+      font-size: 13px;
+      font-weight: 600;
+      outline: none;
+      transition: 0.2s;
+    }
+    .meta-group input:focus {
+      border-color: #0284c7;
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
     }
     .meta-group input::placeholder {
       color: #94a3b8;
+      font-weight: 400;
       font-style: italic;
     }
 
     .row-tab-bar {
       display: flex;
-      gap: 6px;
-      margin-bottom: 8px;
+      gap: 8px;
+      margin-bottom: 10px;
       flex-wrap: wrap;
     }
+    
     .group-input-tab {
       flex: 1;
       min-width: 75px;
-      padding: 6px 4px;
-      background: #1e293b;
-      border: 2px solid #475569;
-      border-radius: 6px;
-      color: #94a3b8;
-      font-weight: bold;
-      font-size: 12px;
+      padding: 8px 6px;
+      background: #f0f9ff;
+      border: 2px solid #bae6fd;
+      border-radius: 8px;
+      color: #0284c7;
+      font-weight: 800;
+      font-size: 13px;
       text-align: center;
       outline: none;
       transition: all 0.2s;
     }
-    .group-input-tab.active {
-      background: #0284c7;
+    .group-input-tab:hover {
+      background: #e0f2fe;
       border-color: #38bdf8;
-      color: #fff;
-      box-shadow: 0 0 8px rgba(2, 132, 199, 0.4);
+      color: #0369a1;
+    }
+    .group-input-tab.active {
+      background: #0ea5e9;
+      border-color: #38bdf8;
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(14, 165, 233, 0.4);
     }
 
     .grid-inputs {
@@ -345,26 +417,41 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      background: #1e293b;
-      border: 1px solid #334155;
-      padding: 5px 8px;
-      border-radius: 6px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      padding: 6px 10px;
+      border-radius: 8px;
+      transition: all 0.2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
     }
+    .input-group.has-data {
+      border-color: #38bdf8;
+      background: #e0f2fe;
+    }
+
     .input-group label {
       font-size: 12px;
-      font-weight: bold;
-      color: #38bdf8;
+      font-weight: 700;
+      color: #0284c7;
       width: 45px;
       text-align: left;
     }
     .input-group input {
       flex: 1;
-      padding: 5px;
-      border-radius: 4px;
-      border: 1px solid #475569;
-      background: #273548;
-      color: #fff;
+      padding: 6px 8px;
+      border-radius: 6px;
+      border: 1px solid #cbd5e1;
+      background: #f8fafc;
+      color: #0f172a;
       font-size: 13px;
+      font-weight: 600;
+      outline: none;
+      transition: 0.2s;
+    }
+    .input-group input:focus {
+      border-color: #0284c7;
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
     }
   </style>
 </head>
@@ -377,15 +464,13 @@
 
   <div class="toolbar">
     <button onclick="openModal()">📝 Nhập thông tin</button>
+    <button class="palette-btn" onclick="openColorPaletteModal()">🎨 Màu bảng tên</button>
     
-    <!-- Custom Dropdown Chọn Ảnh Nền hỗ trợ Hover -->
     <div class="custom-dropdown" id="customImageDropdown">
       <button class="dropdown-toggle-btn" onclick="toggleDropdown(event)">
         🖼️ <span id="currentSelectedLabel">Giao diện lớp</span> ▼
       </button>
-      <div class="dropdown-menu-list" id="dropdownMenuList">
-        <!-- Danh sách các lựa chọn ảnh sẽ được tự động quét và thêm vào đây -->
-      </div>
+      <div class="dropdown-menu-list" id="dropdownMenuList"></div>
     </div>
 
     <button class="warning" onclick="loadOldLayout(true)">📂 Tải Sơ Đồ Cũ</button>
@@ -404,9 +489,9 @@
 
   <!-- Modal Nhập Thông Tin -->
   <div class="modal" id="inputModal">
-    <div class="modal-content">
+    <div class="modal-content custom-iu-theme">
       <div class="modal-header-flex">
-        <h3 style="font-size: 15px; color: #f8fafc; font-weight: 800;">NHẬP THÔNG TIN LỚP & DANH SÁCH</h3>
+        <h3 style="font-size: 16px; color: #0f172a; font-weight: 800; letter-spacing: 0.3px;">NHẬP THÔNG TIN LỚP & DANH SÁCH</h3>
       </div>
 
       <div class="meta-inputs-grid">
@@ -416,28 +501,76 @@
       </div>
 
       <div class="row-tab-bar">
-        <input type="text" class="group-input-tab active" id="tabA" placeholder="Dãy A (G1)" onfocus="switchRowTab('A')" oninput="saveGroupName('A', this.value)">
-        <input type="text" class="group-input-tab" id="tabB" placeholder="Dãy B (G2)" onfocus="switchRowTab('B')" oninput="saveGroupName('B', this.value)">
-        <input type="text" class="group-input-tab" id="tabC" placeholder="Dãy C (G3)" onfocus="switchRowTab('C')" oninput="saveGroupName('C', this.value)">
-        <input type="text" class="group-input-tab" id="tabD" placeholder="Dãy D (G4)" onfocus="switchRowTab('D')" oninput="saveGroupName('D', this.value)">
+        <input type="text" class="group-input-tab active" id="tabA" placeholder="Dãy A" onfocus="switchRowTab('A')" oninput="saveGroupName('A', this.value)">
+        <input type="text" class="group-input-tab" id="tabB" placeholder="Dãy B" onfocus="switchRowTab('B')" oninput="saveGroupName('B', this.value)">
+        <input type="text" class="group-input-tab" id="tabC" placeholder="Dãy C" onfocus="switchRowTab('C')" oninput="saveGroupName('C', this.value)">
+        <input type="text" class="group-input-tab" id="tabD" placeholder="Dãy D" onfocus="switchRowTab('D')" oninput="saveGroupName('D', this.value)">
       </div>
 
       <div class="grid-inputs" id="inputGrid"></div>
       
-      <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 12px;">
+      <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 14px;">
         <button class="success" onclick="saveModalInputs()">Lưu Thay Đổi</button>
         <button class="danger" onclick="closeModal()">Đóng</button>
       </div>
     </div>
   </div>
 
-  <!-- Modal Hướng Dẫn Tươi Tắn Hơn -->
+  <!-- Modal Chọn Màu Bảng Tên HS -->
+  <div class="modal" id="colorPaletteModal">
+    <div class="modal-content" style="width: 520px; background: #ffffff; color: #1e293b; border: 2px solid #0284c7;">
+      <div class="modal-header-flex" style="border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 12px;">
+        <h3 style="font-size: 18px; color: #0284c7; font-weight: 800;">BẢNG TÊN HS</h3>
+      </div>
+      <p style="font-size: 13px; color: #64748b; margin-bottom: 6px;">Chọn tông màu gỗ hoặc màu chủ đạo cho các ô vị trí khi đã có tên học sinh:</p>
+      
+      <div class="color-palette-grid">
+        <!-- Màu Gỗ Đậm Mới -->
+        <div class="color-card" onclick="setSeatTheme('#d9a05b', '#8c531e', '#2c1605')">
+          <div class="color-preview-box" style="background: #d9a05b; border: 1px solid #8c531e; color: #2c1605;">Bảng tên HS</div>
+          <span class="color-card-title">Gỗ Đậm (Hiện tại)</span>
+        </div>
+        <!-- Màu Gỗ Sáng / Vàng Ấm -->
+        <div class="color-card" onclick="setSeatTheme('#fde047', '#ca8a04', '#713f12')">
+          <div class="color-preview-box" style="background: #fde047; border: 1px solid #ca8a04; color: #713f12;">Bảng tên HS</div>
+          <span class="color-card-title">Gỗ Sáng / Vàng Ấm</span>
+        </div>
+        <!-- Màu Gỗ Mật Ong -->
+        <div class="color-card" onclick="setSeatTheme('#fbbf24', '#b45309', '#451a03')">
+          <div class="color-preview-box" style="background: #fbbf24; border: 1px solid #b45309; color: #451a03;">Bảng tên HS</div>
+          <span class="color-card-title">Màu Gỗ Mật Ong</span>
+        </div>
+        <!-- Màu Nâu Trầm Cổ Điển -->
+        <div class="color-card" onclick="setSeatTheme('#b48a60', '#633814', '#ffffff')">
+          <div class="color-preview-box" style="background: #b48a60; border: 1px solid #633814; color: #ffffff;">Bảng tên HS</div>
+          <span class="color-card-title">Nâu Trầm Cổ Điển</span>
+        </div>
+        <!-- Màu Xanh Dương Học Đường -->
+        <div class="color-card" onclick="setSeatTheme('#e0f2fe', '#0284c7', '#0369a1')">
+          <div class="color-preview-box" style="background: #e0f2fe; border: 1px solid #0284c7; color: #0369a1;">Bảng tên HS</div>
+          <span class="color-card-title">Xanh Dương Học Đường</span>
+        </div>
+        <!-- Màu Xanh Lá Tươi Mát -->
+        <div class="color-card" onclick="setSeatTheme('#dcfce7', '#16a34a', '#14532d')">
+          <div class="color-preview-box" style="background: #dcfce7; border: 1px solid #16a34a; color: #14532d;">Bảng tên HS</div>
+          <span class="color-card-title">Xanh Lá Tươi Mát</span>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; margin-top: 14px;">
+        <button class="danger" style="background: #64748b; padding: 8px 18px;" onclick="closeColorPaletteModal()">Đóng</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Hướng Dẫn -->
   <div class="modal" id="helpModal">
     <div class="modal-content" style="width: 480px; background: #ffffff; color: #1e293b; border: 2px solid #38bdf8;">
       <div class="modal-header-flex" style="border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 12px;">
         <h3 style="font-size: 18px; color: #0284c7; font-weight: 800;">💡 HƯỚNG DẪN SỬ DỤNG</h3>
       </div>
       <div style="font-size: 14px; line-height: 1.7; text-align: left; color: #334155; margin: 4px 0;">
+        <p style="margin-bottom: 10px;">• <b>Màu bảng tên:</b> Bấm nút <b>"Màu bảng tên"</b> để chọn tông màu, nút bấm sẽ tự đổi màu theo lựa chọn của thầy.</p>
         <p style="margin-bottom: 10px;">• <b>Chọn giao diện nền:</b> Click vào nút <b>"Giao diện lớp"</b> và rê chuột qua các lựa chọn để xem trước ngay lập tức, click để cố định.</p>
         <p style="margin-bottom: 10px;">• <b>Cách 1 (Sửa trực tiếp):</b> Click vào từng vị trí bàn học hoặc tên Tổ trên sơ đồ để chỉnh sửa nhanh tên học sinh/tên dãy.</p>
         <p style="margin-bottom: 10px;">• <b>Cách 2 (Nhập nhanh):</b> Bấm nút <b>"Nhập thông tin"</b> để mở bảng nhập danh sách học sinh theo từng dãy và điền thông tin lớp, GVCN.</p>
@@ -627,6 +760,16 @@
 
   function openHelpModal() { document.getElementById('helpModal').style.display = 'flex'; }
   function closeHelpModal() { document.getElementById('helpModal').style.display = 'none'; }
+  
+  function openColorPaletteModal() { document.getElementById('colorPaletteModal').style.display = 'flex'; }
+  function closeColorPaletteModal() { document.getElementById('colorPaletteModal').style.display = 'none'; }
+
+  function setSeatTheme(bg, border, text) {
+    document.documentElement.style.setProperty('--seat-bg-color', bg);
+    document.documentElement.style.setProperty('--seat-border-color', border);
+    document.documentElement.style.setProperty('--seat-text-color', text);
+    closeColorPaletteModal();
+  }
 
   function editSingleSeat(id) { openModal(); switchRowTab(id.charAt(0)); setTimeout(() => document.getElementById('input_'+id).focus(), 100); }
   function editGroup(col) { openModal(); switchRowTab(col); setTimeout(() => document.getElementById('tab'+col).focus(), 100); }
@@ -636,7 +779,15 @@
   function syncCurrentTabInputsToMemory() {
     document.querySelectorAll('#inputGrid input').forEach(el => {
       const id = el.id.replace('input_', '');
-      el.value.trim() ? currentSessionData[id] = el.value.trim() : delete currentSessionData[id];
+      const val = el.value.trim();
+      const parentGroup = el.closest('.input-group');
+      if (val) {
+        currentSessionData[id] = val;
+        if(parentGroup) parentGroup.classList.add('has-data');
+      } else {
+        delete currentSessionData[id];
+        if(parentGroup) parentGroup.classList.remove('has-data');
+      }
     });
   }
 
@@ -652,8 +803,19 @@
     for(let r=6; r>=1; r--) {
       ['T', 'P'].forEach(pos => {
         const id = col+r+pos;
-        grid.innerHTML += `<div class="input-group"><label>${id}:</label><input type="text" id="input_${id}" value="${currentSessionData[id]||''}"></div>`;
+        const val = currentSessionData[id] || '';
+        const hasClass = val ? 'has-data' : '';
+        grid.innerHTML += `<div class="input-group ${hasClass}"><label>${id}:</label><input type="text" id="input_${id}" value="${val}" oninput="checkInputDataState(this)"></div>`;
       });
+    }
+  }
+
+  function checkInputDataState(inputEl) {
+    const parentGroup = inputEl.closest('.input-group');
+    if (inputEl.value.trim()) {
+      parentGroup.classList.add('has-data');
+    } else {
+      parentGroup.classList.remove('has-data');
     }
   }
 
