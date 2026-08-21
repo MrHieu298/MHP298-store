@@ -353,7 +353,8 @@
     <button onclick="openModal()">📝 Nhập thông tin</button>
     <div class="image-selector-wrapper">
       <label for="classImageSelect">🖼️ Ảnh:</label>
-      <select id="classImageSelect" onchange="changeClassImage(this.value)">
+      <!-- Tích hợp rà chuột qua lại để đổi giao diện ngay lập tức -->
+      <select id="classImageSelect" onmouseover="setupHoverPreview()" onchange="changeClassImage(this.value)">
         <!-- Tự động quét tối đa 16 ảnh từ thư mục images/ -->
       </select>
     </div>
@@ -407,6 +408,7 @@
         <h3 style="font-size: 16px; color: #38bdf8; font-weight: 800;">💡 HƯỚNG DẪN SỬ DỤNG</h3>
       </div>
       <div style="font-size: 14px; line-height: 1.6; text-align: left; color: #cbd5e1; margin: 10px 0;">
+        <p style="margin-bottom: 8px;">• <b>Đổi giao diện nhanh:</b> Chỉ cần <b>rà chuột qua lại các dòng ảnh</b> trong menu chọn, giao diện sẽ tự đổi ngay lập tức để xem trước.</p>
         <p style="margin-bottom: 8px;">• <b>Tự động nhận ảnh:</b> Đặt ảnh vào thư mục <code>images/</code> từ <code>sodolop0.png</code> đến tối đa <code>sodolop15.png</code>, ứng dụng sẽ tự quét và hiển thị.</p>
         <p style="margin-bottom: 8px;">• <b>Cách 1:</b> Click trực tiếp vào từng vị trí bàn học hoặc tên Tổ trên sơ đồ để sửa nhanh tên học sinh/tên dãy.</p>
         <p style="margin-bottom: 8px;">• <b>Cách 2:</b> Bấm nút <b>"Nhập thông tin"</b> để mở bảng nhập danh sách học sinh theo từng dãy và điền thông tin lớp, GVCN.</p>
@@ -456,7 +458,6 @@
   seatsData.push({ id: 'G3', col: 'C', label: 'TỔ 3', x: groupXOffsets[2], y: groupYOffset, type: 'group' });
   seatsData.push({ id: 'G4', col: 'D', label: 'TỔ 4', x: groupXOffsets[3], y: groupYOffset, type: 'group' });
 
-  // Tự động quét tối đa 16 giao diện (0 đến 15)
   async function detectClassImages() {
     const selectEl = document.getElementById('classImageSelect');
     selectEl.innerHTML = '';
@@ -492,6 +493,21 @@
       img.onload = () => resolve(true);
       img.onerror = () => resolve(false);
       img.src = url;
+    });
+  }
+
+  // Hàm xử lý rà chuột (mousemove) qua các option trong danh sách select để đổi ảnh ngay lập tức
+  function setupHoverPreview() {
+    const selectEl = document.getElementById('classImageSelect');
+    if (selectEl.dataset.hoverInitialized) return;
+    selectEl.dataset.hoverInitialized = "true";
+
+    selectEl.addEventListener('mousemove', (e) => {
+      const target = document.elementFromPoint(e.clientX, e.clientY);
+      if (target && target.tagName === 'OPTION') {
+        changeClassImage(target.value);
+        selectEl.value = target.value;
+      }
     });
   }
 
