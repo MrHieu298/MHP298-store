@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sơ Đồ Lớp Học - Nhập Tên & In Khổ A3</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    :root {
+      --seat-bg-color: #fef08a;       
+      --seat-border-color: #d97706;   
+      --seat-text-color: #451a03;     
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
+    body { background: #0f172a; color: #fff; padding: 15px; text-align: center; position: relative; }
+    
+    .top-help-btn {
+      position: absolute;
+      top: 20px;
+      right: 25px;
+      background: linear-gradient(to bottom, #f59e0b, #d97706);
+      color: white;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: none;
+      font-weight: 900;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3), inset 0 2px 3px rgba(255,255,255,0.4), inset 0 -2px 3px rgba(0,0,0,0.2);
+      transition: 0.2s;
+      z-index: 50;
+    }
+    .top-help-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 8px rgba(0,0,0,0.4), inset 0 2px 3px rgba(255,255,255,0.5);
+    }
+    .top-help-btn:active {
+      transform: translateY(1px);
+    }
+
+    .toolbar {
+      margin-top: 10px;
+      margin-bottom: 15px;
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    
+    button {
+      background: #0284c7;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    button:hover { background: #0369a1; }
+    .warning { background: #d97706; }
+    .warning:hover { background: #b45309; }
+    .success { background: #16a34a; }
+    .success:hover { background: #15803d; }
+    .danger { background: #dc2626; }
+    .danger:hover { background: #b91c1c; }
+
+    .image-selector-wrapper {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #1e293b;
+      border: 1px solid #475569;
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+    .image-selector-wrapper label {
+      font-size: 13px;
+      font-weight: bold;
+      color: #38bdf8;
+    }
+    .image-selector-wrapper select {
+      background: #273548;
+      color: #fff;
+      border: 1px solid #475569;
+      padding: 6px 10px;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+      outline: none;
+      transition: 0.2s;
+    }
+    .image-selector-wrapper select:hover {
+      border-color: #38bdf8;
+    }
+
+    .a3-container {
+      width: 1200px;
+      height: 675px;
+      margin: 0 auto;
+      position: relative;
+      background: #fff url('images/sodolop0.png') no-repeat center/contain;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      transition: background-image 0.3s ease;
+    }
+
+    .seat-grid {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+    }
+
+    .seat {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      width: 60px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 12px;
+      color: #0369a1;
+      cursor: pointer;
+      border-radius: 4px;
+      padding: 2px 3px;
+      text-align: center;
+      line-height: 1.15;
+      word-break: break-word;
+      white-space: pre-line;
+      transition: all 0.2s;
+    }
+
+    .seat.empty {
+      opacity: 0.2;
+      background: transparent;
+      border: 1px dashed #94a3b8;
+    }
+
+    .seat.filled {
+      opacity: 1 !important;
+      background: var(--seat-bg-color);
+      color: var(--seat-text-color);
+      border: 1px solid var(--seat-border-color);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .seat.special-group {
+      width: 78px;
+      height: 30px;
+      font-size: 14px;
+      border-radius: 8px;
+      background: linear-gradient(to bottom, #ffffff, #fdfbf7) !important;
+      color: #1e3a8a !important;
+      border: 1.5px solid #c2c2c2 !important;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25), inset 0 1px 2px rgba(255, 255, 255, 0.9);
+      font-weight: 900;
+      text-transform: uppercase;
+      opacity: 1 !important;
+      white-space: nowrap;
+      letter-spacing: 0.5px;
+      transition: all 0.2s ease;
+    }
+
+    .seat.special-group:hover {
+      background: linear-gradient(to bottom, #f0f9ff, #e0f2fe) !important;
+      border-color: #0284c7 !important;
+      color: #0369a1 !important;
+      box-shadow: 0 4px 8px rgba(2, 132, 199, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.9);
+      outline: none;
+    }
+
+    .seat:not(.special-group):hover {
+      opacity: 1 !important;
+      outline: 2px dashed #0284c7;
+      z-index: 10;
+    }
+
+    .diagram-footer-info {
+      position: absolute;
+      bottom: 6px;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      width: 100%;
+      pointer-events: none;
+      display: none;
+    }
+    .footer-class-title {
+      font-size: 20px;
+      font-weight: 900;
+      color: #0f172a;
+      text-shadow: 0 1px 3px rgba(255,255,255,0.9);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 1px;
+    }
+    .footer-teacher-name {
+      font-size: 17px;
+      font-weight: 800;
+      color: #0284c7;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.15), 0 0 5px rgba(255,255,255,0.9);
+      letter-spacing: 0.3px;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(15, 23, 42, 0.75);
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+    }
+    .modal-content {
+      background: #273548;
+      color: #f1f5f9;
+      padding: 20px;
+      border-radius: 16px;
+      width: 640px;
+      max-width: 92%;
+      max-height: 92vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 30px rgba(0, 0, 0, 0.5);
+      overflow-y: auto;
+      position: relative;
+      border: 1px solid #3b4c64;
+    }
+
+    .modal-header-flex {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .meta-inputs-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1.5fr;
+      gap: 8px;
+      margin-bottom: 8px;
+      background: #1e293b;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid #334155;
+    }
+    .meta-group {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .meta-group label {
+      font-size: 11px;
+      font-weight: bold;
+      color: #38bdf8;
+    }
+    .meta-group input {
+      padding: 6px 8px;
+      border-radius: 5px;
+      border: 1px solid #475569;
+      background: #273548;
+      color: #fff;
+      font-size: 12px;
+    }
+    .meta-group input::placeholder {
+      color: #94a3b8;
+      font-style: italic;
+    }
+
+    .row-tab-bar {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+    .group-input-tab {
+      flex: 1;
+      min-width: 75px;
+      padding: 6px 4px;
+      background: #1e293b;
+      border: 2px solid #475569;
+      border-radius: 6px;
+      color: #94a3b8;
+      font-weight: bold;
+      font-size: 12px;
+      text-align: center;
+      outline: none;
+      transition: all 0.2s;
+    }
+    .group-input-tab.active {
+      background: #0284c7;
+      border-color: #38bdf8;
+      color: #fff;
+      box-shadow: 0 0 8px rgba(2, 132, 199, 0.4);
+    }
+
+    .grid-inputs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin: 6px 0;
+      overflow-y: auto;
+      max-height: 320px;
+      padding-right: 5px;
+    }
+
+    .input-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #1e293b;
+      border: 1px solid #334155;
+      padding: 5px 8px;
+      border-radius: 6px;
+    }
+    .input-group label {
+      font-size: 12px;
+      font-weight: bold;
+      color: #38bdf8;
+      width: 45px;
+      text-align: left;
+    }
+    .input-group input {
+      flex: 1;
+      padding: 5px;
+      border-radius: 4px;
+      border: 1px solid #475569;
+      background: #273548;
+      color: #fff;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+
+  <button class="top-help-btn" onclick="openHelpModal()" title="Hướng dẫn sử dụng">?</button>
+
+  <h1 id="pageTitle" style="font-size: 20px; margin-bottom: 5px;">SƠ ĐỒ LỚP HỌC</h1>
+  <p style="margin-bottom: 12px; color: #94a3b8; font-size: 13px;">Click vào bàn hoặc Group để chỉnh sửa trực tiếp hoặc dùng bảng nhập liệu</p>
+
+  <div class="toolbar">
+    <button onclick="openModal()">📝 Nhập thông tin</button>
+    <div class="image-selector-wrapper">
+      <label for="classImageSelect">🖼️ Ảnh:</label>
+      <select id="classImageSelect" onchange="changeClassImage(this.value)">
+        <!-- Tự động quét tối đa 16 ảnh từ thư mục images/ -->
+      </select>
+    </div>
+    <button class="warning" onclick="loadOldLayout(true)">📂 Tải Sơ Đồ Cũ</button>
+    <button class="success" onclick="exportPNG()">🖼️ Tải Ảnh PNG</button>
+    <button class="success" onclick="exportPDF()">📄 Xuất File PDF Khổ A3</button>
+    <button class="danger" onclick="resetSeats()">🔄 Khôi Phục Mặc Định</button>
+  </div>
+
+  <div class="a3-container" id="diagram">
+    <div class="seat-grid" id="seatGrid"></div>
+    <div class="diagram-footer-info" id="footerInfo">
+      <div class="footer-class-title" id="footerClassTitle"></div>
+      <div class="footer-teacher-name" id="footerTeacherName"></div>
+    </div>
+  </div>
+
+  <!-- Modal Nhập Thông Tin -->
+  <div class="modal" id="inputModal">
+    <div class="modal-content">
+      <div class="modal-header-flex">
+        <h3 style="font-size: 15px; color: #f8fafc; font-weight: 800;">NHẬP THÔNG TIN LỚP & DANH SÁCH</h3>
+      </div>
+
+      <div class="meta-inputs-grid">
+        <div class="meta-group"><label>Tên Lớp:</label><input type="text" id="inputClassName" placeholder="VD: 11TA3" oninput="updateMetaInfo()"></div>
+        <div class="meta-group"><label>Năm Học:</label><input type="text" id="inputSchoolYear" placeholder="VD: 2026-2027" oninput="updateMetaInfo()"></div>
+        <div class="meta-group"><label>GVCN:</label><input type="text" id="inputTeacherName" placeholder="VD: Thầy Hiếu" oninput="updateMetaInfo()"></div>
+      </div>
+
+      <div class="row-tab-bar">
+        <input type="text" class="group-input-tab active" id="tabA" placeholder="Dãy A (G1)" onfocus="switchRowTab('A')" oninput="saveGroupName('A', this.value)">
+        <input type="text" class="group-input-tab" id="tabB" placeholder="Dãy B (G2)" onfocus="switchRowTab('B')" oninput="saveGroupName('B', this.value)">
+        <input type="text" class="group-input-tab" id="tabC" placeholder="Dãy C (G3)" onfocus="switchRowTab('C')" oninput="saveGroupName('C', this.value)">
+        <input type="text" class="group-input-tab" id="tabD" placeholder="Dãy D (G4)" onfocus="switchRowTab('D')" oninput="saveGroupName('D', this.value)">
+      </div>
+
+      <div class="grid-inputs" id="inputGrid"></div>
+      
+      <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 12px;">
+        <button class="success" onclick="saveModalInputs()">Lưu Thay Đổi</button>
+        <button class="danger" onclick="closeModal()">Đóng</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Hướng Dẫn Riêng Biệt -->
+  <div class="modal" id="helpModal">
+    <div class="modal-content" style="width: 460px;">
+      <div class="modal-header-flex">
+        <h3 style="font-size: 16px; color: #38bdf8; font-weight: 800;">💡 HƯỚNG DẪN SỬ DỤNG</h3>
+      </div>
+      <div style="font-size: 14px; line-height: 1.6; text-align: left; color: #cbd5e1; margin: 10px 0;">
+        <p style="margin-bottom: 8px;">• <b>Tự động nhận ảnh:</b> Đặt ảnh vào thư mục <code>images/</code> từ <code>sodolop0.png</code> đến tối đa <code>sodolop15.png</code>, ứng dụng sẽ tự quét và hiển thị.</p>
+        <p style="margin-bottom: 8px;">• <b>Cách 1:</b> Click trực tiếp vào từng vị trí bàn học hoặc tên Tổ trên sơ đồ để sửa nhanh tên học sinh/tên dãy.</p>
+        <p style="margin-bottom: 8px;">• <b>Cách 2:</b> Bấm nút <b>"Nhập thông tin"</b> để mở bảng nhập danh sách học sinh theo từng dãy và điền thông tin lớp, GVCN.</p>
+        <p>• <b>Xuất file:</b> Sử dụng nút <b>"Tải Ảnh PNG"</b> hoặc <b>"Xuất File PDF Khổ A3"</b> để lưu sơ đồ hoàn chỉnh kèm thông tin chân trang.</p>
+      </div>
+      <div style="display: flex; justify-content: flex-end; margin-top: 15px;">
+        <button class="success" onclick="closeHelpModal()">Đã hiểu</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const seatsData = [];
+  const columns = ['A', 'B', 'C', 'D'];
+  const row1ColX = [[21.78 - (21/1200*100), 26.78 - (21/1200*100)],[38.30 - (14/1200*100), 43.30 - (14/1200*100)],[54.30, 59.30],[70.30 + (7/1200*100),  75.30 + (7/1200*100)]];
+  const row2ColX = [[21.78 - (14/1200*100), 26.78 - (14/1200*100)],[38.30 - (11/1200*100), 43.30 - (11/1200*100)],[54.30, 59.30],[70.30 + (2/1200*100), 75.30 + (2/1200*100)]];
+  const row3ColX = [[21.28 - (2/1200*100), 26.28 - (2/1200*100)],[37.80 - (2/1200*100), 42.80 - (2/1200*100)],[54.30, 59.30],[70.30, 75.30]];
+  const row4ColX = [[21.363, 26.363],[37.716, 42.716],[54.133, 59.133],[70.133, 75.133]];
+  const row5ColX = [[21.780, 26.780],[37.966 - (6/1200*100), 42.966 - (6/1200*100)],[53.966, 58.966],[69.966, 74.966]];
+  const row6ColX = [[21.780, 26.780],[37.550, 42.550],[53.883, 58.883],[69.550, 74.550]];
+  const baseRowY = [82.5, 71.2, 59.8, 48.2, 36.8, 25.2]; 
+  const pixelOffsets = [0, 10, 2, -12, -22, -38]; 
+  const rowY = baseRowY.map((y, idx) => y - (pixelOffsets[idx] / 675 * 100));
+
+  let currentSessionData = {}; 
+  let groupNames = { A: 'TỔ 1', B: 'TỔ 2', C: 'TỔ 3', D: 'TỔ 4' };
+  let currentClass = "";
+  let currentYear = "";
+  let currentTeacher = "";
+  let activeTab = 'A';
+
+  for (let c = 0; c < 4; c++) {
+    for (let r = 0; r < 6; r++) {
+      const seatNum = r + 1;
+      let xCoords = [row1ColX, row2ColX, row3ColX, row4ColX, row5ColX, row6ColX][r][c];
+      seatsData.push({ id: `${columns[c]}${seatNum}T`, x: xCoords[0], y: rowY[r], type: 'seat' });
+      seatsData.push({ id: `${columns[c]}${seatNum}P`, x: xCoords[1], y: rowY[r], type: 'seat' });
+    }
+  }
+
+  const baseGroupX = [24.28, 40.80, 56.80, 72.80];
+  const groupXOffsets = [baseGroupX[0] - (23 / 1200 * 100), baseGroupX[1] - (15 / 1200 * 100), baseGroupX[2] + (4 / 1200 * 100), baseGroupX[3] + (8 / 1200 * 100)];
+  const groupYOffset = 92.5 - (22 / 675 * 100);
+
+  seatsData.push({ id: 'G1', col: 'A', label: 'TỔ 1', x: groupXOffsets[0], y: groupYOffset, type: 'group' });
+  seatsData.push({ id: 'G2', col: 'B', label: 'TỔ 2', x: groupXOffsets[1], y: groupYOffset, type: 'group' });
+  seatsData.push({ id: 'G3', col: 'C', label: 'TỔ 3', x: groupXOffsets[2], y: groupYOffset, type: 'group' });
+  seatsData.push({ id: 'G4', col: 'D', label: 'TỔ 4', x: groupXOffsets[3], y: groupYOffset, type: 'group' });
+
+  // Tự động quét tối đa 16 giao diện (0 đến 15)
+  async function detectClassImages() {
+    const selectEl = document.getElementById('classImageSelect');
+    selectEl.innerHTML = '';
+    
+    let index = 0;
+    let maxCheck = 16; 
+    
+    while (index < maxCheck) {
+      let path = `images/sodolop${index}.png`;
+      let exists = await checkImageExists(path);
+      if (exists) {
+        let opt = document.createElement('option');
+        opt.value = path;
+        opt.innerText = index === 0 ? 'Mặc định' : `Ảnh ${index}`;
+        selectEl.appendChild(opt);
+        index++;
+      } else {
+        break;
+      }
+    }
+
+    if (selectEl.options.length === 0) {
+      let opt = document.createElement('option');
+      opt.value = 'images/sodolop0.png';
+      opt.innerText = 'Mặc định';
+      selectEl.appendChild(opt);
+    }
+  }
+
+  function checkImageExists(url) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve(true);
+      img.onerror = () => resolve(false);
+      img.src = url;
+    });
+  }
+
+  function initSeats() {
+    const grid = document.getElementById('seatGrid');
+    grid.innerHTML = '';
+    seatsData.forEach(seat => {
+      const el = document.createElement('div');
+      if (seat.type === 'group') {
+        el.className = 'seat special-group';
+        el.style.left = seat.x + '%';
+        el.style.top = seat.y + '%';
+        el.innerText = groupNames[seat.col];
+        el.onclick = () => editGroup(seat.col);
+      } else {
+        const studentName = currentSessionData[seat.id];
+        el.className = 'seat ' + (studentName ? 'filled' : 'empty');
+        el.style.left = seat.x + '%';
+        el.style.top = seat.y + '%';
+        el.innerText = studentName ? formatName(studentName) : '';
+        el.onclick = () => editSingleSeat(seat.id);
+      }
+      grid.appendChild(el);
+    });
+    updateHeaderTitle();
+  }
+
+  function formatName(name) {
+    const parts = name.trim().split(/\s+/);
+    return parts.length > 1 ? parts.slice(0, Math.ceil(parts.length / 2)).join(' ') + '\n' + parts.slice(Math.ceil(parts.length / 2)).join(' ') : name;
+  }
+
+  function updateHeaderTitle() {
+    currentClass = document.getElementById('inputClassName').value.trim();
+    currentYear = document.getElementById('inputSchoolYear').value.trim();
+    currentTeacher = document.getElementById('inputTeacherName').value.trim();
+
+    const footerInfo = document.getElementById('footerInfo');
+    const hasData = currentClass || currentYear || currentTeacher;
+
+    if (hasData) {
+      footerInfo.style.display = 'block';
+      let titleText = currentClass ? `SƠ ĐỒ LỚP ${currentClass}` : '';
+      if (currentYear) titleText += ` - NĂM HỌC ${currentYear}`;
+      document.getElementById('footerClassTitle').innerText = titleText;
+      document.getElementById('footerTeacherName').innerText = currentTeacher ? `GVCN: ${currentTeacher}` : '';
+    } else {
+      footerInfo.style.display = 'none';
+    }
+
+    let pageTitleText = "SƠ ĐỒ LỚP HỌC";
+    if (currentClass) pageTitleText += ` ${currentClass}`;
+    if (currentYear) pageTitleText += ` - NĂM HỌC ${currentYear}`;
+    document.getElementById('pageTitle').innerText = pageTitleText;
+  }
+
+  function updateMetaInfo() {
+    updateHeaderTitle();
+  }
+
+  function changeClassImage(imagePath) {
+    const diagram = document.getElementById('diagram');
+    diagram.style.backgroundImage = `url('${imagePath}')`;
+  }
+
+  function openHelpModal() { document.getElementById('helpModal').style.display = 'flex'; }
+  function closeHelpModal() { document.getElementById('helpModal').style.display = 'none'; }
+
+  function editSingleSeat(id) { openModal(); switchRowTab(id.charAt(0)); setTimeout(() => document.getElementById('input_'+id).focus(), 100); }
+  function editGroup(col) { openModal(); switchRowTab(col); setTimeout(() => document.getElementById('tab'+col).focus(), 100); }
+  function openModal() { document.getElementById('inputModal').style.display = 'flex'; renderInputsForTab(activeTab); }
+  function closeModal() { document.getElementById('inputModal').style.display = 'none'; }
+  
+  function syncCurrentTabInputsToMemory() {
+    document.querySelectorAll('#inputGrid input').forEach(el => {
+      const id = el.id.replace('input_', '');
+      el.value.trim() ? currentSessionData[id] = el.value.trim() : delete currentSessionData[id];
+    });
+  }
+
+  function switchRowTab(col) {
+    syncCurrentTabInputsToMemory();
+    activeTab = col;
+    columns.forEach(c => document.getElementById('tab'+c).classList.toggle('active', c === col));
+    renderInputsForTab(col);
+  }
+
+  function renderInputsForTab(col) {
+    const grid = document.getElementById('inputGrid'); grid.innerHTML = '';
+    for(let r=6; r>=1; r--) {
+      ['T', 'P'].forEach(pos => {
+        const id = col+r+pos;
+        grid.innerHTML += `<div class="input-group"><label>${id}:</label><input type="text" id="input_${id}" value="${currentSessionData[id]||''}"></div>`;
+      });
+    }
+  }
+
+  function saveGroupName(col, val) { groupNames[col] = val.trim(); initSeats(); }
+  
+  function saveModalInputs() { 
+    syncCurrentTabInputsToMemory(); 
+    initSeats(); 
+  }
+
+  function loadOldLayout(s) { initSeats(); }
+  function resetSeats() { if(confirm('Xóa hết dữ liệu?')) { localStorage.clear(); location.reload(); } }
+  
+  function exportPNG() { 
+    const footerInfo = document.getElementById('footerInfo');
+    const wasVisible = footerInfo.style.display;
+    footerInfo.style.display = 'block'; 
+    html2canvas(document.getElementById('diagram'), {scale: 2, useCORS: true}).then(c => { 
+      footerInfo.style.display = wasVisible;
+      const a = document.createElement('a'); 
+      a.download = (currentClass ? `SoDoLop_${currentClass}.png` : 'sodo.png'); 
+      a.href = c.toDataURL('image/png'); 
+      a.click(); 
+    }); 
+  }
+
+  function exportPDF() { 
+    const { jsPDF } = window.jspdf; 
+    const footerInfo = document.getElementById('footerInfo');
+    const wasVisible = footerInfo.style.display;
+    footerInfo.style.display = 'block';
+    html2canvas(document.getElementById('diagram'), {scale: 3, useCORS: true}).then(c => { 
+      footerInfo.style.display = wasVisible;
+      const pdf = new jsPDF('l', 'mm', 'a3'); 
+      pdf.addImage(c.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, 420, 297); 
+      pdf.save(currentClass ? `SoDoLop_${currentClass}.pdf` : 'sodo.pdf'); 
+    }); 
+  }
+  
+  detectClassImages();
+  initSeats();
+</script>
+</body>
+</html>
